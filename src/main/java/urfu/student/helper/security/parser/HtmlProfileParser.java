@@ -286,8 +286,8 @@ public class HtmlProfileParser {
                 if (heading != null && heading.text().contains("Информация о курсах")) {
                     logger.debug("Found courses section with heading: {}", heading.text());
 
-                    // Ищем ссылки на курсы внутри этой секции
-                    Elements courseLinks = section.select("a[href*=/course/]");
+                    // Ищем ссылки на курсы внутри этой секции - используем более гибкий селектор
+                    Elements courseLinks = section.select("a[href*=course]");
                     if (!courseLinks.isEmpty()) {
                         logger.debug("Found {} course links in courses section", courseLinks.size());
                         for (Element link : courseLinks) {
@@ -301,7 +301,7 @@ public class HtmlProfileParser {
                         // Альтернативный способ: ищем в списках
                         Elements listItems = section.select("li");
                         for (Element listItem : listItems) {
-                            Element link = listItem.selectFirst("a[href*=/course/]");
+                            Element link = listItem.selectFirst("a[href*=course]");
                             if (link != null) {
                                 Course course = createCourseFromLink(link, student);
                                 if (course != null) {
@@ -323,7 +323,7 @@ public class HtmlProfileParser {
                     Element parent = coursesDt.parent();
                     if (parent != null) {
                         // Ищем все ссылки на курсы в родительском элементе
-                        Elements courseLinks = parent.select("a[href*=/course/]");
+                        Elements courseLinks = parent.select("a[href*=course]");
                         logger.debug("Found {} course links in dt parent", courseLinks.size());
 
                         for (Element link : courseLinks) {
@@ -339,7 +339,7 @@ public class HtmlProfileParser {
             // Способ 3: Ищем любые ссылки на курсы во всем профиле
             if (courses.isEmpty()) {
                 logger.debug("Trying global course link search");
-                Elements allCourseLinks = doc.select(".profile_tree a[href*=/course/]");
+                Elements allCourseLinks = doc.select(".profile_tree a[href*=course]");
                 logger.debug("Found {} course links in entire profile", allCourseLinks.size());
 
                 for (Element link : allCourseLinks) {
@@ -411,6 +411,9 @@ public class HtmlProfileParser {
     /**
      * Метод для диагностики структуры HTML (полезен для отладки)
      */
+    /**
+     * Метод для диагностики структуры HTML (полезен для отладки)
+     */
     public void diagnoseHtmlStructure(String html) {
         logger.info("=== HTML STRUCTURE DIAGNOSIS ===");
 
@@ -441,8 +444,8 @@ public class HtmlProfileParser {
                 // Для "Участник курсов" выводим дополнительную информацию
                 if (dt.text().contains("Участник курсов")) {
                     logger.info("    dd HTML: {}", dd.html());
-                    // Ищем ссылки на курсы в этом dd
-                    Elements courseLinks = dd.select("a[href*=/course/]");
+                    // Ищем ссылки на курсы в этом dd - используем новый селектор
+                    Elements courseLinks = dd.select("a[href*=course]");
                     logger.info("    Found {} course links in this dd:", courseLinks.size());
                     for (Element link : courseLinks) {
                         logger.info("      course link: '{}' -> '{}'", link.text(), link.attr("href"));
@@ -458,8 +461,8 @@ public class HtmlProfileParser {
             logger.info("  mailto: '{}' -> '{}'", link.text(), link.attr("href"));
         }
 
-        // Анализируем ссылки на курсы во всем документе
-        Elements courseLinks = doc.select("a[href*=/course/]");
+        // Анализируем ссылки на курсы во всем документе - используем новый селектор
+        Elements courseLinks = doc.select("a[href*=course]");
         logger.info("Found {} course links in entire document:", courseLinks.size());
         for (Element link : courseLinks) {
             logger.info("  course: '{}' -> '{}'", link.text(), link.attr("href"));
@@ -475,7 +478,7 @@ public class HtmlProfileParser {
                 // Для секции с курсами выводим дополнительную информацию
                 if (heading.text().contains("Информация о курсах")) {
                     logger.info("    section HTML: {}", section.html());
-                    Elements sectionCourseLinks = section.select("a[href*=/course/]");
+                    Elements sectionCourseLinks = section.select("a[href*=course]");
                     logger.info("    Found {} course links in this section:", sectionCourseLinks.size());
                     for (Element link : sectionCourseLinks) {
                         logger.info("      course: '{}' -> '{}'", link.text(), link.attr("href"));
