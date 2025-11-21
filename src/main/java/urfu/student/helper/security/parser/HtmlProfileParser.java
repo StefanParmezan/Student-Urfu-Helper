@@ -7,8 +7,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import urfu.student.helper.models.course.Course;
 import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.course.Course;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -275,49 +275,116 @@ public class HtmlProfileParser {
 
     private void parseCoursesFromUrfu(Document doc, Student student) {
         try {
-            // Ищем секцию с курсами в реальном HTML УрФУ
-            Elements courseSections = doc.select("section.node_category");
+            logger.debug("Starting course parsing from URFU profile");
 
+            List<Course> courses = new ArrayList<>();
+
+            // Способ 1: Ищем курсы в секции "Информация о курсах"
+            Elements courseSections = doc.select("section.node_category");
             for (Element section : courseSections) {
                 Element heading = section.selectFirst("h3.lead");
                 if (heading != null && heading.text().contains("Информация о курсах")) {
-                    // Нашли секцию с курсами
+                    logger.debug("Found courses section with heading: {}", heading.text());
+
+                    // Ищем ссылки на курсы внутри этой секции
                     Elements courseLinks = section.select("a[href*=/course/]");
-                    List<Course> courses = new ArrayList<>();
-
-                    for (Element link : courseLinks) {
-                        try {
-                            String courseName = link.text().trim();
-                            String courseUrl = link.attr("href");
-
-                            if (!courseName.isEmpty() && !courseName.contains("http")) {
-                                Course course = new Course();
-                                course.setCourseName(courseName);
-                                course.setCourseUrl(courseUrl);
-                                course.setStudent(student);
+                    if (!courseLinks.isEmpty()) {
+                        logger.debug("Found {} course links in courses section", courseLinks.size());
+                        for (Element link : courseLinks) {
+                            Course course = createCourseFromLink(link, student);
+                            if (course != null) {
                                 courses.add(course);
-
-                                logger.trace("Parsed URFU course: {} -> {}", courseName, courseUrl);
                             }
-                        } catch (Exception e) {
-                            logger.error("Error parsing individual URFU course", e);
+                        }
+                    } else {
+                        logger.debug("No course links found in courses section, trying alternative parsing");
+                        // Альтернативный способ: ищем в списках
+                        Elements listItems = section.select("li");
+                        for (Element listItem : listItems) {
+                            Element link = listItem.selectFirst("a[href*=/course/]");
+                            if (link != null) {
+                                Course course = createCourseFromLink(link, student);
+                                if (course != null) {
+                                    courses.add(course);
+                                }
+                            }
                         }
                     }
-
-                    student.setCourseList(courses);
-                    logger.debug("Successfully parsed {} URFU courses", courses.size());
-                    return;
+                    break;
                 }
             }
 
-            // Если не нашли курсов, устанавливаем пустой список
-            student.setCourseList(new ArrayList<>());
-            logger.debug("No courses found in URFU profile");
+            // Способ 2: Ищем курсы по dt "Участник курсов"
+            if (courses.isEmpty()) {
+                logger.debug("Trying alternative course parsing by dt label");
+                Element coursesDt = doc.selectFirst("dt:contains(Участник курсов)");
+                if (coursesDt != null) {
+                    logger.debug("Found courses dt element");
+                    Element parent = coursesDt.parent();
+                    if (parent != null) {
+                        // Ищем все ссылки на курсы в родительском элементе
+                        Elements courseLinks = parent.select("a[href*=/course/]");
+                        logger.debug("Found {} course links in dt parent", courseLinks.size());
+
+                        for (Element link : courseLinks) {
+                            Course course = createCourseFromLink(link, student);
+                            if (course != null) {
+                                courses.add(course);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Способ 3: Ищем любые ссылки на курсы во всем профиле
+            if (courses.isEmpty()) {
+                logger.debug("Trying global course link search");
+                Elements allCourseLinks = doc.select(".profile_tree a[href*=/course/]");
+                logger.debug("Found {} course links in entire profile", allCourseLinks.size());
+
+                for (Element link : allCourseLinks) {
+                    Course course = createCourseFromLink(link, student);
+                    if (course != null) {
+                        courses.add(course);
+                    }
+                }
+            }
+
+            student.setCourseList(courses);
+            logger.info("Successfully parsed {} URFU courses", courses.size());
 
         } catch (Exception e) {
             logger.error("Error parsing URFU courses", e);
             student.setCourseList(new ArrayList<>()); // устанавливаем пустой список в случае ошибки
         }
+    }
+
+    private Course createCourseFromLink(Element link, Student student) {
+        try {
+            String courseName = link.text().trim();
+            String courseUrl = link.attr("href");
+
+            if (!courseName.isEmpty() && !courseName.matches("https?://.*")) {
+                Course course = new Course();
+                course.setCourseName(courseName);
+
+                // Обеспечиваем полный URL если нужно
+                if (courseUrl.startsWith("/")) {
+                    courseUrl = "https://elearn.urfu.ru" + courseUrl;
+                } else if (!courseUrl.startsWith("http")) {
+                    courseUrl = "https://elearn.urfu.ru/" + courseUrl;
+                }
+                course.setCourseUrl(courseUrl);
+
+                course.setStudent(student);
+
+                logger.trace("Parsed URFU course: {} -> {}", courseName, courseUrl);
+                return course;
+            }
+        } catch (Exception e) {
+            logger.error("Error creating course from link", e);
+        }
+        return null;
     }
 
     /**
@@ -371,6 +438,16 @@ public class HtmlProfileParser {
             Element dd = dt.nextElementSibling();
             if (dd != null) {
                 logger.info("    dd: '{}'", dd.text());
+                // Для "Участник курсов" выводим дополнительную информацию
+                if (dt.text().contains("Участник курсов")) {
+                    logger.info("    dd HTML: {}", dd.html());
+                    // Ищем ссылки на курсы в этом dd
+                    Elements courseLinks = dd.select("a[href*=/course/]");
+                    logger.info("    Found {} course links in this dd:", courseLinks.size());
+                    for (Element link : courseLinks) {
+                        logger.info("      course link: '{}' -> '{}'", link.text(), link.attr("href"));
+                    }
+                }
             }
         }
 
@@ -379,6 +456,32 @@ public class HtmlProfileParser {
         logger.info("Found {} mailto links:", mailtoLinks.size());
         for (Element link : mailtoLinks) {
             logger.info("  mailto: '{}' -> '{}'", link.text(), link.attr("href"));
+        }
+
+        // Анализируем ссылки на курсы во всем документе
+        Elements courseLinks = doc.select("a[href*=/course/]");
+        logger.info("Found {} course links in entire document:", courseLinks.size());
+        for (Element link : courseLinks) {
+            logger.info("  course: '{}' -> '{}'", link.text(), link.attr("href"));
+        }
+
+        // Анализируем секции профиля
+        Elements profileSections = doc.select("section.node_category");
+        logger.info("Found {} profile sections:", profileSections.size());
+        for (Element section : profileSections) {
+            Element heading = section.selectFirst("h3.lead");
+            if (heading != null) {
+                logger.info("  section: '{}'", heading.text());
+                // Для секции с курсами выводим дополнительную информацию
+                if (heading.text().contains("Информация о курсах")) {
+                    logger.info("    section HTML: {}", section.html());
+                    Elements sectionCourseLinks = section.select("a[href*=/course/]");
+                    logger.info("    Found {} course links in this section:", sectionCourseLinks.size());
+                    for (Element link : sectionCourseLinks) {
+                        logger.info("      course: '{}' -> '{}'", link.text(), link.attr("href"));
+                    }
+                }
+            }
         }
 
         logger.info("=== END DIAGNOSIS ===");

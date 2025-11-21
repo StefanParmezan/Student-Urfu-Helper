@@ -69,11 +69,13 @@ class HtmlProfileParserTest {
 			logger.info("Student Number: {}", student.getStudentNumber());
 			logger.info("Number of Courses: {}", student.getCourseList().size());
 
-			// Выводим курсы
+			// Выводим курсы с ссылками
 			if (student.getCourseList() != null && !student.getCourseList().isEmpty()) {
-				logger.info("Courses:");
+				logger.info("Courses with URLs:");
 				student.getCourseList().forEach(course ->
 						logger.info("  - {} -> {}", course.getCourseName(), course.getCourseUrl()));
+			} else {
+				logger.warn("No courses found in profile");
 			}
 			logger.info("=== END STUDENT INFORMATION ===");
 
@@ -81,6 +83,16 @@ class HtmlProfileParserTest {
 			assertNotNull(student.getStudentSurName(), "Surname should not be null");
 			assertNotNull(student.getStudentName(), "Name should not be null");
 			assertNotNull(student.getEmail(), "Email should not be null");
+
+			// Проверяем что курсы найдены (если они есть в реальном файле)
+			if (student.getCourseList().size() > 0) {
+				// Проверяем что у курсов есть названия и ссылки
+				student.getCourseList().forEach(course -> {
+					assertNotNull(course.getCourseName(), "Course name should not be null");
+					assertNotNull(course.getCourseUrl(), "Course URL should not be null");
+					assertTrue(course.getCourseUrl().contains("/course/"), "Course URL should contain /course/");
+				});
+			}
 
 			logger.info("✅ Successfully parsed real URFU profile - Student: {} {}, Email: {}, Courses: {}",
 					student.getStudentSurName(), student.getStudentName(),
