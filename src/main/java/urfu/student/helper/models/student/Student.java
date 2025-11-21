@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import urfu.student.helper.models.course.Course;
+
+import java.util.List;
 
 @Entity(name="student")
 @Table(name="students")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class Student {
     @Id
@@ -32,25 +33,33 @@ public class Student {
     @Column(name="student_time_zone")
     private String timeZone;
 
-    @Column(name="university")
-    private String university;
+    @Column(name="education_status")
+    private String educationStatus;
 
     @Column(name="academic_group")
-    private String academic_group;
+    private String academicGroup;
 
     @Column(name="student_number")
-    private String student_number;
-
-    @Column(name="student_phone_number", unique = true)
-    private String phoneNumber;
+    private String studentNumber;
 
     @Column(name="student_email", unique = true)
     private String studentEmail;
 
-    public Student(String studentName, String studentSurName, String password, String phoneNumber){
-        this.studentName = studentName;
-        this.studentSurName = studentSurName;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
+    @OneToMany(mappedBy = "student")
+    private List<Course> courseList;
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "studentName = " + studentName + ", " +
+                "studentSurName = " + studentSurName + ", " +
+                "patronymic = " + patronymic + ", " +
+                "password = " + password + ", " +
+                "timeZone = " + timeZone + ", " +
+                "university = " + educationStatus + ", " +
+                "academic_group = " + academicGroup + ", " +
+                "student_number = " + studentNumber + ", " +
+                "studentEmail = " + studentEmail + ")";
     }
 }
