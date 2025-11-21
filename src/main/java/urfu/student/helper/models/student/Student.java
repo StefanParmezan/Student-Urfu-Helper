@@ -23,11 +23,23 @@ public class Student {
     @Column(name="student_surname")
     private String studentSurName;
 
+    @Column(name="student_patronymic")
+    private String patronymic;
+
     @Column(name="password")
     private String password;
 
+    @Column(name="student_time_zone")
+    private String timeZone;
+
     @Column(name="university")
     private String university;
+
+    @Column(name="academic_group")
+    private String academic_group;
+
+    @Column(name="student_number")
+    private String student_number;
 
     @Column(name="student_phone_number", unique = true)
     private String phoneNumber;
