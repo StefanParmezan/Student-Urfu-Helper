@@ -1,15 +1,11 @@
-package urfu.student.helper.services;
+package urfu.student.helper.services.student;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import urfu.student.helper.models.student.Student;
-import urfu.student.helper.models.student.dto.StudentRegistryDTO;
 import urfu.student.helper.repositories.StudentRepository;
 
 @Service

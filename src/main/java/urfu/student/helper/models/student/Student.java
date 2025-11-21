@@ -1,11 +1,9 @@
 package urfu.student.helper.models.student;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import urfu.student.helper.models.chat.ChatEntity;
 import urfu.student.helper.models.course.Course;
 
 import java.util.List;
@@ -17,6 +15,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -52,6 +51,10 @@ public class Student {
     @OneToMany(mappedBy = "student")
     @ToString.Exclude
     private List<Course> courseList;
+
+    @OneToMany(mappedBy = "owner")
+    @ToString.Exclude
+    private List<ChatEntity> chats;
 
     @Override
     public final boolean equals(Object o) {
