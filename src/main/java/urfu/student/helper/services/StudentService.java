@@ -1,6 +1,7 @@
 package urfu.student.helper.services;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -28,8 +29,5 @@ public class StudentService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id `%s` not found".formatted(id)));
     }
 
-    public Student save(StudentRegistryDTO studentRegistryDTO){
-        Student student = new Student(studentRegistryDTO.studentName(), studentRegistryDTO.studentSurName(), passwordEncoder.encode(studentRegistryDTO.password()), studentRegistryDTO.phoneNumber());
-        return studentRepository.save(student);
-    }
+
 }

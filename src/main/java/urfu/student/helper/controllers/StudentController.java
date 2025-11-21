@@ -3,6 +3,7 @@ package urfu.student.helper.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -22,15 +23,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/urfuhelper/students")
-@RequiredArgsConstructor
 public class StudentController {
-
+    @Autowired
     private final StudentService studentService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Student> save(@RequestBody StudentRegistryDTO studentRegistryDTO){
-        return ResponseEntity.ok(studentService.save(studentRegistryDTO));
+    public StudentController(StudentService studentService){
+        this.studentService = studentService;
     }
 
 }
