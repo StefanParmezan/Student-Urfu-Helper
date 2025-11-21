@@ -23,11 +23,22 @@ public class Student {
     @Column(name="student_surname")
     private String studentSurName;
 
-    @Column(name="university")
-    private String university;
-
     @Column(name="password")
     private String password;
 
+    @Column(name="university")
+    private String university;
 
+    @Column(name="student_phone_number")
+    private Integer phoneNumber;
+
+    @Column(name="student_email")
+    private String studentEmail;
+
+    public Student(String studentName, String studentSurName, String password, int phoneNumber){
+        this.studentName = studentName;
+        this.studentSurName = studentSurName;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
 }
