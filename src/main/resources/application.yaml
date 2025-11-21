@@ -16,6 +16,14 @@ spring:
     username: ${DATABASE_USERNAME}
     url: ${DATABASE_URL}
 
+  ai:
+    gigachat:
+      auth:
+        bearer:
+          api-key: ${GIGACHAT_API_KEY}
+        scope: GIGACHAT_API_PERS
+        unsafe-ssl: ${TEST_MODE}
+
 logging:
   level:
     org:
@@ -29,12 +37,13 @@ logging:
     student:
       helper:
         security: "DEBUG"
+
 server:
   port: ${APPLICATION_PORT}
+
 app:
   jwt:
     secret: ${JWT_SECRET}
-
   session:
     timeout-minutes: "120"
   cors:
