@@ -43,7 +43,7 @@ public class Student {
     private String studentNumber;
 
     @Column(name="student_email", unique = true)
-    private String studentEmail;
+    private String email;
 
     @OneToMany(mappedBy = "student")
     private List<Course> courseList;
@@ -60,6 +60,6 @@ public class Student {
                 "university = " + educationStatus + ", " +
                 "academic_group = " + academicGroup + ", " +
                 "student_number = " + studentNumber + ", " +
-                "studentEmail = " + studentEmail + ")";
+                "studentEmail = " + email + ")";
     }
 }

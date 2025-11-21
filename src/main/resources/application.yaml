@@ -15,8 +15,7 @@ spring:
     driver-class-name: "org.postgresql.Driver"
     username: ${DATABASE_USERNAME}
     url: ${DATABASE_URL}
-jwt:
-  secret: ${JWT_SECRET}
+
 logging:
   level:
     org:
@@ -26,5 +25,20 @@ logging:
             sql:
               BasicBinder: "TRACE"
         SQL: "DEBUG"
+  urfu:
+    student:
+      helper:
+        security: "DEBUG"
 server:
   port: ${APPLICATION_PORT}
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+
+  session:
+    timeout-minutes: "120"
+  cors:
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "*"
+    allowed-origins: "*"
+    allow-credentials: "true"

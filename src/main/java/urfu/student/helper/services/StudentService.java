@@ -16,12 +16,10 @@ import urfu.student.helper.repositories.StudentRepository;
 @Transactional
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, PasswordEncoder passwordEncoder){
+    public StudentService(StudentRepository studentRepository){
         this.studentRepository = studentRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public Student getStudentById(Long id){
