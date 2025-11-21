@@ -12,7 +12,7 @@ import urfu.student.helper.security.dto.AuthResponse;
 import urfu.student.helper.security.dto.LoginRequest;
 import urfu.student.helper.security.jwt.JwtService;
 import urfu.student.helper.security.parser.HtmlProfileParser;
-import urfu.student.helper.services.StudentService;
+import urfu.student.helper.services.student.StudentService;
 
 @Service
 public class AuthService {
