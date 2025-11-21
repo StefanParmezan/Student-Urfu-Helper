@@ -28,6 +28,7 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Student> save(@RequestBody StudentRegistryDTO studentRegistryDTO){
         return ResponseEntity.ok(studentService.save(studentRegistryDTO));
     }

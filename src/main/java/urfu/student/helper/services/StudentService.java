@@ -1,5 +1,6 @@
 package urfu.student.helper.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -11,6 +12,7 @@ import urfu.student.helper.models.student.dto.StudentRegistryDTO;
 import urfu.student.helper.repositories.StudentRepository;
 
 @Service
+@Transactional
 public class StudentService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;

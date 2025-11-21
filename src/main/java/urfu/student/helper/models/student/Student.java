@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Student {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name="student_name")
@@ -29,13 +29,13 @@ public class Student {
     @Column(name="university")
     private String university;
 
-    @Column(name="student_phone_number")
-    private Integer phoneNumber;
+    @Column(name="student_phone_number", unique = true)
+    private String phoneNumber;
 
-    @Column(name="student_email")
+    @Column(name="student_email", unique = true)
     private String studentEmail;
 
-    public Student(String studentName, String studentSurName, String password, int phoneNumber){
+    public Student(String studentName, String studentSurName, String password, String phoneNumber){
         this.studentName = studentName;
         this.studentSurName = studentSurName;
         this.password = password;
