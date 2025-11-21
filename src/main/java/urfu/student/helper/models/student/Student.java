@@ -4,14 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 import urfu.student.helper.models.course.Course;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name="student")
 @Table(name="students")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Student {
     @Id
@@ -46,20 +50,22 @@ public class Student {
     private String email;
 
     @OneToMany(mappedBy = "student")
+    @ToString.Exclude
     private List<Course> courseList;
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "studentName = " + studentName + ", " +
-                "studentSurName = " + studentSurName + ", " +
-                "patronymic = " + patronymic + ", " +
-                "password = " + password + ", " +
-                "timeZone = " + timeZone + ", " +
-                "university = " + educationStatus + ", " +
-                "academic_group = " + academicGroup + ", " +
-                "student_number = " + studentNumber + ", " +
-                "studentEmail = " + email + ")";
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Student student = (Student) o;
+        return getId() != null && Objects.equals(getId(), student.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
