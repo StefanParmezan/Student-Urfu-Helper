@@ -2,6 +2,7 @@ package urfu.student.helper.ai.functions;
 
 import lombok.AllArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import urfu.student.helper.ai.StudentHolder;
 import urfu.student.helper.ai.functions.service.AiFunctionService;
 
@@ -27,6 +28,13 @@ public class BasicFunctions {
     @Tool(name = "getStudentCoursesList", description = "Говорит тебе курсы на которые уже записан студент с которым ты работаешь")
     public String getStudentCoursesList() {
         return service.getStudentCourses(holder.getStudent()).toString();
+    }
+
+    @Tool(name = "getStudentMarks", description = "Говорит тебе оценки по курсу")
+    public String getStudentMarks(
+            @ToolParam(description = "Имя курса на который ты хочешь узнать оценки") String courseName
+    ) {
+        return null;
     }
 
 }
