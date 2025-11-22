@@ -79,7 +79,8 @@ class HtmlProfileParserTest {
 				studentEntity.getCourseEntityList().forEach(courseEntity -> {
 					assertNotNull(courseEntity.getCourseName(), "Course name should not be null");
 					assertNotNull(courseEntity.getCourseUrl(), "Course URL should not be null");
-					assertTrue(courseEntity.getCourseUrl().contains("courseEntity"), "Course URL should contain 'courseEntity'");
+					// ИСПРАВЛЕНО: ищем "course" вместо "courseEntity"
+					assertTrue(courseEntity.getCourseUrl().contains("course"), "Course URL should contain 'course'");
 				});
 			} else {
 				logger.warn("No courses found in profile");

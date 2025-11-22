@@ -277,7 +277,7 @@ public class HtmlProfileParser {
         try {
             logger.debug("Starting course parsing from URFU profile");
 
-            List<CourseEntity> cours = new ArrayList<>();
+            List<CourseEntity> courses = new ArrayList<>();
 
             // Способ 1: Ищем курсы в секции "Информация о курсах"
             Elements courseSections = doc.select("section.node_category");
@@ -293,7 +293,7 @@ public class HtmlProfileParser {
                         for (Element link : courseLinks) {
                             CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
                             if (courseEntity != null) {
-                                cours.add(courseEntity);
+                                courses.add(courseEntity);
                             }
                         }
                     } else {
@@ -305,7 +305,7 @@ public class HtmlProfileParser {
                             if (link != null) {
                                 CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
                                 if (courseEntity != null) {
-                                    cours.add(courseEntity);
+                                    courses.add(courseEntity);
                                 }
                             }
                         }
@@ -315,7 +315,7 @@ public class HtmlProfileParser {
             }
 
             // Способ 2: Ищем курсы по dt "Участник курсов"
-            if (cours.isEmpty()) {
+            if (courses.isEmpty()) {
                 logger.debug("Trying alternative course parsing by dt label");
                 Element coursesDt = doc.selectFirst("dt:contains(Участник курсов)");
                 if (coursesDt != null) {
@@ -329,7 +329,7 @@ public class HtmlProfileParser {
                         for (Element link : courseLinks) {
                             CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
                             if (courseEntity != null) {
-                                cours.add(courseEntity);
+                                courses.add(courseEntity);
                             }
                         }
                     }
@@ -337,7 +337,7 @@ public class HtmlProfileParser {
             }
 
             // Способ 3: Ищем любые ссылки на курсы во всем профиле
-            if (cours.isEmpty()) {
+            if (courses.isEmpty()) {
                 logger.debug("Trying global course link search");
                 Elements allCourseLinks = doc.select(".profile_tree a[href*=course]");
                 logger.debug("Found {} course links in entire profile", allCourseLinks.size());
@@ -345,13 +345,13 @@ public class HtmlProfileParser {
                 for (Element link : allCourseLinks) {
                     CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
                     if (courseEntity != null) {
-                        cours.add(courseEntity);
+                        courses.add(courseEntity);
                     }
                 }
             }
 
-            studentEntity.setCourseEntityList(cours);
-            logger.info("Successfully parsed {} URFU courses", cours.size());
+            studentEntity.setCourseEntityList(courses);
+            logger.info("Successfully parsed {} URFU courses", courses.size());
 
         } catch (Exception e) {
             logger.error("Error parsing URFU courses", e);
