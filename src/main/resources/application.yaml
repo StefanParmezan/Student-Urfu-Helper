@@ -17,11 +17,13 @@ spring:
     url: ${DATABASE_URL}
   ai:
     gigachat:
-      auth:
-        bearer:
-          api-key: ${GIGACHAT_API_KEY}
-        scope: GIGACHAT_API_PERS
-        unsafe-ssl: ${TEST_MODE}
+      scope: GIGACHAT_API_PERS
+      unsafe-ssl: ${TEST_MODE}
+      client-id: ${GIGACHAT_CLIENT_ID}
+      client-secret: ${GIGACHAT_CLIENT_SECRET}
+      chat:
+        options:
+          model: ${MODEL_NAME}
 
 logging:
   level:
