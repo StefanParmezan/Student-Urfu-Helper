@@ -3,10 +3,13 @@ package urfu.student.helper.db.message;
 import lombok.NonNull;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.springframework.ai.chat.messages.*;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import urfu.student.helper.db.chat.ChatEntity;
 
-import static org.springframework.ai.chat.messages.MessageType.*;
+import static org.springframework.ai.chat.messages.MessageType.TOOL;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MessageMapper {

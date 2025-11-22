@@ -1,7 +1,6 @@
 package urfu.student.helper.db.message;
 
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

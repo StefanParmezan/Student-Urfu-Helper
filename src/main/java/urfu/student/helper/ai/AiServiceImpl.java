@@ -6,8 +6,8 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import urfu.student.helper.db.chat.ChatEntity;
-import urfu.student.helper.db.student.StudentEntity;
 import urfu.student.helper.db.chat.ChatService;
+import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.function.Consumer;
 
@@ -19,8 +19,8 @@ public class AiServiceImpl implements AiService {
 
     @Override
     public Flux<String> callToNewChat(String input, StudentEntity studentEntity) {
-        ChatEntity chat = chatService.create(studentEntity);
-        return callByChatId(input, chat);
+        return chatService.create(studentEntity)
+                .flatMapMany(chat -> callByChatId(input, chat));
     }
 
     @Override

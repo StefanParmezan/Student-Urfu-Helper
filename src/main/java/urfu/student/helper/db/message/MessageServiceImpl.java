@@ -19,12 +19,14 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public void save(Long chatId, List<Message> messages) {
-        ChatEntity chat = chatService.get(chatId);
-        repository.saveAll(
-            messages.stream()
-                .map(message -> mapper.toEntity(message, chat))
-                .toList()
-        );
+        chatService.get(chatId)
+                .subscribe(chat ->
+                                repository.saveAll(
+                                    messages.stream()
+                                    .map(message -> mapper.toEntity(message, chat))
+                                    .toList()
+                                )
+                );
     }
 
     @Override

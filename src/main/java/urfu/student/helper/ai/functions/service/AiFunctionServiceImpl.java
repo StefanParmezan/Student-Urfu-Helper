@@ -3,9 +3,9 @@ package urfu.student.helper.ai.functions.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import urfu.student.helper.db.course.CourseEntity;
-import urfu.student.helper.db.course.dto.CourseAiDTO;
 import urfu.student.helper.db.course.CourseMapper;
 import urfu.student.helper.db.course.CourseService;
+import urfu.student.helper.db.course.dto.CourseAiDTO;
 import urfu.student.helper.db.parents.CollectionToAiStringAdapter;
 import urfu.student.helper.db.student.StudentEntity;
 

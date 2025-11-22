@@ -15,11 +15,6 @@ public class AuthController {
 
     private final AuthService service;
 
-    @PostMapping("/fuckingphp")
-    public Exception fuckingPhp() {
-        return new RuntimeException("THE_PHP_FUCKED_OUR_ASS");
-    }
-
     @PostMapping
     public Mono<AuthResponse> auth(@RequestBody AuthRequest data) {
         return null;
