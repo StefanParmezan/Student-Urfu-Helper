@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties("urfu.api")
 public class UrfuApiConfig {
-    private String authUrl;
-    private String profileUrl;
+    private String baseUrl;
+    private String authEndpoint;
+    private String profileEndpoint;
 
 }

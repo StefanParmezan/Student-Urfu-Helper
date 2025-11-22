@@ -50,8 +50,9 @@ app:
 
 urfu:
   api:
-    auth-url: "https://elearn.urfu.ru/my"
-    profile-url: "https://elearn.urfu.ru/profile.php"
+    base-url: https://elearn.urfu.ru
+    auth-endpoint: "/my"
+    profile-endpoint: "/profile.php"
 
   session:
     timeout-minutes: "120"

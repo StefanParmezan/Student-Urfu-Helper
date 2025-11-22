@@ -1,82 +1,51 @@
 package urfu.student.helper.security.client;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import urfu.student.helper.security.config.UrfuApiConfig;
+import urfu.student.helper.security.dto.AuthRequest;
 
+import java.util.function.Function;
+
+@Log4j
 @Component
 @AllArgsConstructor
 public class UrfuApiConnector {
-    private static final Logger logger = LoggerFactory.getLogger(UrfuApiConnector.class);
-    private final UrfuApiConfig urfuApiConfig;
-    private final RestTemplate restTemplate;
+    private final UrfuApiConfig config;
+    private final WebClient client = WebClient.builder()
+            .baseUrl(config.getBaseUrl())
+            .build();
 
-    public String authenticateAndGetProfile(String email, String password) {
-        logger.info("Attempting URFU authentication for email: {}", email);
-
-        try {
-            // 1. Аутентификация и получение сессионных cookies
-            String sessionCookie = performAuthentication(email, password);
-
-            // 2. Получение страницы профиля с использованием сессионных cookies
-            String profileHtml = fetchProfilePage(sessionCookie);
-
-            logger.info("Successfully retrieved URFU profile for email: {}", email);
-            return profileHtml;
-
-        } catch (RestClientException e) {
-            logger.error("URFU authentication failed for email: {}", email, e);
-            throw new RuntimeException("URFU authentication failed: " + e.getMessage(), e);
-        }
+    public Mono<String> authenticate(AuthRequest credentials) {
+        return auth(credentials).flatMap(this::getProfile);
     }
 
-    private String performAuthentication(String email, String password) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("username", email);
-        body.add("password", password);
-        // Может потребоваться добавить другие параметры формы
-        body.add("anchor", "");
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(urfuApiConfig.getAuthUrl(), request, String.class);
-
-        // Извлечение сессионных cookies из ответа
-        return extractSessionCookies(response.getHeaders());
+    private Mono<String> auth(AuthRequest credentials) {
+        return client.post()
+                .uri(config.getAuthEndpoint())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(credentials)
+                .exchangeToMono(clientResponse -> Mono.just(clientResponse.headers()))
+                .map(headers -> headers.asHttpHeaders().getFirst(HttpHeaders.SET_COOKIE));
     }
 
-    private String fetchProfilePage(String sessionCookie) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", sessionCookie);
-        headers.add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                urfuApiConfig.getProfileUrl(), HttpMethod.GET, request, String.class);
-
-        return response.getBody();
-    }
-
-    private String extractSessionCookies(HttpHeaders headers) {
-        // Извлекаем все cookies из заголовков ответа
-        // В реальной реализации нужно будет анализировать конкретные cookies УрФУ
-        String cookies = headers.getFirst(HttpHeaders.SET_COOKIE);
-        logger.debug("Received cookies: {}", cookies);
-
-        if (cookies == null || cookies.isEmpty()) {
-            throw new RuntimeException("No session cookies received - authentication failed");
-        }
-
-        return cookies;
+    private Mono<String> getProfile(String cookies) {
+        return client.post()
+                .uri(config.getProfileEndpoint())
+                .header(HttpHeaders.COOKIE, cookies)
+                .header(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class));
     }
 }
