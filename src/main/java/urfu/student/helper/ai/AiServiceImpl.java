@@ -1,0 +1,41 @@
+package urfu.student.helper.ai;
+
+import lombok.AllArgsConstructor;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import urfu.student.helper.db.chat.ChatEntity;
+import urfu.student.helper.db.chat.ChatService;
+import urfu.student.helper.db.student.StudentEntity;
+
+import java.util.function.Consumer;
+
+@Service
+@AllArgsConstructor
+public class AiServiceImpl implements AiService {
+    private final ChatService chatService;
+    private final ChatClient client;
+
+    @Override
+    public Flux<String> callToNewChat(String input, StudentEntity studentEntity) {
+        return chatService.create(studentEntity)
+                .flatMapMany(chat -> callByChatId(input, chat));
+    }
+
+    @Override
+    public Flux<String> callByChatId(String input, ChatEntity chat) {
+        return client.prompt(input)
+                .advisors(new ConversationIdSetter(chat.getId()))
+                .stream()
+                .content();
+    }
+
+    private record ConversationIdSetter(Long id) implements Consumer<ChatClient.AdvisorSpec> {
+
+        @Override
+        public void accept(ChatClient.AdvisorSpec advisorSpec) {
+            advisorSpec.param(ChatMemory.CONVERSATION_ID, id);
+        }
+    }
+}

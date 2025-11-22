@@ -1,0 +1,57 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: "org.hibernate.dialect.PostgreSQLDialect"
+        format_sql: "true"
+    hibernate:
+      ddl-auto: "update"
+    show-sql: ${TEST_MODE:false}
+  application:
+    name: "urfuhelper"
+  datasource:
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: "org.postgresql.Driver"
+    username: ${DATABASE_USERNAME}
+    url: ${DATABASE_URL}
+  ai:
+    gigachat:
+      scope: GIGACHAT_API_PERS
+      unsafe-ssl: ${TEST_MODE:false}
+      client-id: ${GIGACHAT_CLIENT_ID}
+      client-secret: ${GIGACHAT_CLIENT_SECRET}
+      chat:
+        options:
+          model: ${MODEL_NAME}
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: "TRACE"
+        SQL: "DEBUG"
+  urfu:
+    student:
+      helper:
+        security: "DEBUG"
+
+
+server:
+  port: ${APPLICATION_PORT}
+
+
+urfu:
+  api:
+    base-url: "https://elearn.urfu.ru"
+    auth-endpoint: "/my"
+    profile-endpoint: "/profile.php"
+
+secret:
+  jwt:
+    signing-key: ${JWT_SECRET}
+    life-time:
+      value: 30
+      unit: DAYS
