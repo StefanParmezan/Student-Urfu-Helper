@@ -18,7 +18,7 @@ spring:
   ai:
     gigachat:
       scope: GIGACHAT_API_PERS
-      unsafe-ssl: ${TEST_MODE}
+      unsafe-ssl: ${TEST_MODE:false}
       client-id: ${GIGACHAT_CLIENT_ID}
       client-secret: ${GIGACHAT_CLIENT_SECRET}
       chat:

@@ -3,6 +3,7 @@ package urfu.student.helper.ai;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import urfu.student.helper.db.chat.ChatEntity;
 import urfu.student.helper.db.student.StudentEntity;
@@ -10,6 +11,7 @@ import urfu.student.helper.db.chat.ChatService;
 
 import java.util.function.Consumer;
 
+@Service
 @AllArgsConstructor
 public class AiServiceImpl implements AiService {
     private final ChatService chatService;

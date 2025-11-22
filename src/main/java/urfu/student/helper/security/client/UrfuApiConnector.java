@@ -13,12 +13,16 @@ import urfu.student.helper.security.dto.AuthRequest;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 public class UrfuApiConnector {
-    private UrfuApiConfig config;
-    private final WebClient client = WebClient.builder()
-            .baseUrl(config.getBaseUrl())
-            .build();
+    private final UrfuApiConfig config;
+    private final WebClient client;
+
+    public UrfuApiConnector(UrfuApiConfig config) {
+        this.config = config;
+        this.client = WebClient.builder()
+                .baseUrl(config.getBaseUrl())
+                .build();
+    }
 
     public Mono<String> authenticate(AuthRequest credentials) {
         return auth(credentials).flatMap(this::getProfile);

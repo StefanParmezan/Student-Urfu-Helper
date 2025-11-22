@@ -3,12 +3,14 @@ package urfu.student.helper.ai.functions;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.stereotype.Component;
 import urfu.student.helper.ai.StudentHolder;
 import urfu.student.helper.ai.functions.service.AiFunctionService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+@Component
 @AllArgsConstructor
 public class BasicFunctions {
     private final StudentHolder holder;

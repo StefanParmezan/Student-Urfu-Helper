@@ -3,12 +3,13 @@ package urfu.student.helper.ai;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import urfu.student.helper.db.student.StudentEntity;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST)
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Getter
 @Setter
 public class StudentHolder {
