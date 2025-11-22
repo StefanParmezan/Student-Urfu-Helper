@@ -3,9 +3,11 @@ package urfu.student.helper.db.student;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import urfu.student.helper.db.chat.ChatEntity;
 import urfu.student.helper.db.course.CourseEntity;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +36,8 @@ public class StudentEntity {
     private String password;
 
     @Column(name="student_time_zone")
-    private String timeZone; //TODO to ZoneId
+    @Convert(converter = Jsr310JpaConverters.ZoneIdConverter.class)
+    private ZoneId timeZone;
 
     @Column(name="education_status")
     private String educationStatus; //TODO to Enum
@@ -55,6 +58,10 @@ public class StudentEntity {
     @OneToMany(mappedBy = "owner")
     @ToString.Exclude
     private List<ChatEntity> chats;
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = ZoneId.of(timeZone);
+    }
 
     @Override
     public final boolean equals(Object o) {

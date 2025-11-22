@@ -2,7 +2,6 @@ package urfu.student.helper.ai.functions;
 
 import lombok.AllArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
 import urfu.student.helper.ai.StudentHolder;
 import urfu.student.helper.ai.functions.service.AiFunctionService;
 
@@ -14,10 +13,9 @@ public class BasicFunctions {
     private final StudentHolder holder;
     private final AiFunctionService service;
 
-
     @Tool(name = "getDateTime", description = "Говорит тебе текущие дату и время пользователя")
     public String getDateTime() {
-        ZoneId zone = ZoneId.of("Asia/Yekaterinburg"); //TODO = holder.getStudent().getTimeZone();
+        ZoneId zone = holder.getStudent().getTimeZone();
         return LocalDateTime.now(zone).toString();
     }
 
