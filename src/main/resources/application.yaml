@@ -45,6 +45,9 @@ server:
 app:
   jwt:
     secret: ${JWT_SECRET}
+    expiration: ${EXPIRATION_TIME}
+
+
   session:
     timeout-minutes: "120"
   cors:

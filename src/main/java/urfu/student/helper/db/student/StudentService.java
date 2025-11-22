@@ -1,6 +1,7 @@
 package urfu.student.helper.db.student;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -8,13 +9,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-
-    @Autowired
-    public StudentService(StudentRepository studentRepository){
-        this.studentRepository = studentRepository;
-    }
 
     public StudentEntity getStudentById(Long id){
         return studentRepository.getStudentById(id).orElseThrow(() ->

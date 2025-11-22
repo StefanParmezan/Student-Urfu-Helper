@@ -1,5 +1,6 @@
 package urfu.student.helper.security.client;
 
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@AllArgsConstructor
 public class UrfuAuthClient {
 
     private static final Logger logger = LoggerFactory.getLogger(UrfuAuthClient.class);
@@ -22,10 +24,6 @@ public class UrfuAuthClient {
     private String profileUrl;
 
     private final RestTemplate restTemplate;
-
-    public UrfuAuthClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     public String authenticateAndGetProfile(String email, String password) {
         try {
