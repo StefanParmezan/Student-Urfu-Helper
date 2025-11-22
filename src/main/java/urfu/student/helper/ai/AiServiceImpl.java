@@ -18,13 +18,13 @@ public class AiServiceImpl implements AiService {
     @Override
     public Flux<String> callToNewChat(String input, StudentEntity studentEntity) {
         ChatEntity chat = chatService.create(studentEntity);
-        return callByChatId(input, chat.getId());
+        return callByChatId(input, chat);
     }
 
     @Override
-    public Flux<String> callByChatId(String input, Long chatId) {
+    public Flux<String> callByChatId(String input, ChatEntity chat) {
         return client.prompt(input)
-                .advisors(new ConversationIdSetter(chatId))
+                .advisors(new ConversationIdSetter(chat.getId()))
                 .stream()
                 .content();
     }
