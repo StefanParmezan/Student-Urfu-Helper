@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import reactor.core.publisher.Flux;
-import urfu.student.helper.models.chat.ChatEntity;
-import urfu.student.helper.models.student.StudentEntity;
-import urfu.student.helper.services.chat.ChatService;
+import urfu.student.helper.db.chat.ChatEntity;
+import urfu.student.helper.db.student.StudentEntity;
+import urfu.student.helper.db.chat.ChatService;
 
 import java.util.function.Consumer;
 

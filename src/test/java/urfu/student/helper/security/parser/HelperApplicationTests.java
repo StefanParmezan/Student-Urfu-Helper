@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import urfu.student.helper.models.student.StudentEntity;
+import urfu.student.helper.db.student.StudentEntity;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import urfu.student.helper.ai.AiService;
-import urfu.student.helper.models.student.StudentEntity;
 
 @AllArgsConstructor
 @RestController

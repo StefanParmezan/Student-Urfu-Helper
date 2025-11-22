@@ -1,9 +1,9 @@
-package urfu.student.helper.models.course;
+package urfu.student.helper.db.course;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import urfu.student.helper.models.student.StudentEntity;
+import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.Objects;
 

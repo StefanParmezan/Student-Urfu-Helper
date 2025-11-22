@@ -1,7 +1,7 @@
 package urfu.student.helper.ai;
 
 import reactor.core.publisher.Flux;
-import urfu.student.helper.models.student.StudentEntity;
+import urfu.student.helper.db.student.StudentEntity;
 
 public interface AiService {
     Flux<String> callToNewChat(String userRequest, StudentEntity studentEntity);
