@@ -1,8 +1,7 @@
-package urfu.student.helper.repositories;
+package urfu.student.helper.db.student;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import urfu.student.helper.models.student.StudentEntity;
 
 import java.util.Optional;
 

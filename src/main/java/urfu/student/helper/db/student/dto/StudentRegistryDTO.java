@@ -1,4 +1,4 @@
-package urfu.student.helper.models.student.dto;
+package urfu.student.helper.db.student.dto;
 
 public record StudentRegistryDTO(
         String studentName,

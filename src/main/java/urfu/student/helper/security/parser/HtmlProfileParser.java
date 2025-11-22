@@ -7,8 +7,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import urfu.student.helper.models.student.StudentEntity;
-import urfu.student.helper.models.course.CourseEntity;
+import urfu.student.helper.db.student.StudentEntity;
+import urfu.student.helper.db.course.CourseEntity;
 
 import java.util.ArrayList;
 import java.util.List;

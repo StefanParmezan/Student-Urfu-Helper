@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.stereotype.Service;
-import urfu.student.helper.services.message.MessageService;
+import urfu.student.helper.db.message.MessageService;
 
 import java.util.List;
 

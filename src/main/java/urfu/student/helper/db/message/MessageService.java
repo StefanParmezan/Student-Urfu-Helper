@@ -1,7 +1,6 @@
-package urfu.student.helper.services.message;
+package urfu.student.helper.db.message;
 
 import org.springframework.ai.chat.messages.Message;
-import urfu.student.helper.models.message.MessageEntity;
 
 import java.util.List;
 

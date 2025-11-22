@@ -1,10 +1,10 @@
-package urfu.student.helper.models.student;
+package urfu.student.helper.db.student;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import urfu.student.helper.models.chat.ChatEntity;
-import urfu.student.helper.models.course.CourseEntity;
+import urfu.student.helper.db.chat.ChatEntity;
+import urfu.student.helper.db.course.CourseEntity;
 
 import java.util.List;
 import java.util.Objects;
