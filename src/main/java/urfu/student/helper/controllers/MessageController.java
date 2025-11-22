@@ -9,8 +9,13 @@ import urfu.student.helper.ai.AiService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/chat")
-public class ChatController {
+@RequestMapping("/chat/message")
+public class MessageController {
+    private final AiService aiService;
 
-
+    @PostMapping("/send")
+    public Flux<String> call(String message, Long chatId) {
+        return aiService.callByChatId(message, chatId);
+        //TODO реалоизовать вызов на новый чат
+    }
 }
