@@ -34,10 +34,10 @@ public class StudentEntity {
     private String password;
 
     @Column(name="student_time_zone")
-    private String timeZone;
+    private String timeZone; //TODO to ZoneId
 
     @Column(name="education_status")
-    private String educationStatus;
+    private String educationStatus; //TODO to Enum
 
     @Column(name="academic_group")
     private String academicGroup;
