@@ -1,0 +1,10 @@
+ChatController:
+GET /chat/{chatId}
+DELETE /chat/{chatId}
+POST /chat/new/message
+POST /chat/{chatId}/message
+PATCH /chat/message
+DELETE /chat/message
+
+StudentController:
+???
