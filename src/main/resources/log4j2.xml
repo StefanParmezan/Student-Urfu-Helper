@@ -9,11 +9,11 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="urfu.student.helper.security.parser" level="DEBUG" additivity="false">
+        <Logger name="urfu.studentEntity.helper.security.parser" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Logger>
-        <Logger name="urfu.student.helper" level="INFO" additivity="false">
+        <Logger name="urfu.studentEntity.helper" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Logger>

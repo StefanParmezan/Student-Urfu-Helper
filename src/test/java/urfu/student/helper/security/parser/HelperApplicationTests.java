@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,35 +51,35 @@ class HtmlProfileParserTest {
 			logger.info("=== END DIAGNOSIS ===");
 
 			// When
-			Student student = htmlProfileParser.parseStudentProfile(html, password);
+			StudentEntity studentEntity = htmlProfileParser.parseStudentProfile(html, password);
 
 			// Then
-			assertNotNull(student, "Student should not be null");
+			assertNotNull(studentEntity, "Student should not be null");
 			logger.info("Successfully parsed real URFU profile file");
 
 			// Выводим всю информацию о студенте для проверки
 			logger.info("=== PARSED STUDENT INFORMATION ===");
-			logger.info("Surname: {}", student.getStudentSurName());
-			logger.info("Name: {}", student.getStudentName());
-			logger.info("Patronymic: {}", student.getPatronymic());
-			logger.info("Email: {}", student.getEmail());
-			logger.info("Time Zone: {}", student.getTimeZone());
-			logger.info("Education Status: {}", student.getEducationStatus());
-			logger.info("Academic Group: {}", student.getAcademicGroup());
-			logger.info("Student Number: {}", student.getStudentNumber());
-			logger.info("Number of Courses: {}", student.getCourseList().size());
+			logger.info("Surname: {}", studentEntity.getStudentSurName());
+			logger.info("Name: {}", studentEntity.getStudentName());
+			logger.info("Patronymic: {}", studentEntity.getPatronymic());
+			logger.info("Email: {}", studentEntity.getEmail());
+			logger.info("Time Zone: {}", studentEntity.getTimeZone());
+			logger.info("Education Status: {}", studentEntity.getEducationStatus());
+			logger.info("Academic Group: {}", studentEntity.getAcademicGroup());
+			logger.info("Student Number: {}", studentEntity.getStudentNumber());
+			logger.info("Number of Courses: {}", studentEntity.getCourseEntityList().size());
 
 			// Выводим курсы с ссылками
-			if (student.getCourseList() != null && !student.getCourseList().isEmpty()) {
+			if (studentEntity.getCourseEntityList() != null && !studentEntity.getCourseEntityList().isEmpty()) {
 				logger.info("Courses with URLs:");
-				student.getCourseList().forEach(course ->
-						logger.info("  - {} -> {}", course.getCourseName(), course.getCourseUrl()));
+				studentEntity.getCourseEntityList().forEach(courseEntity ->
+						logger.info("  - {} -> {}", courseEntity.getCourseName(), courseEntity.getCourseUrl()));
 
 				// Проверяем что у курсов есть названия и ссылки
-				student.getCourseList().forEach(course -> {
-					assertNotNull(course.getCourseName(), "Course name should not be null");
-					assertNotNull(course.getCourseUrl(), "Course URL should not be null");
-					assertTrue(course.getCourseUrl().contains("course"), "Course URL should contain 'course'");
+				studentEntity.getCourseEntityList().forEach(courseEntity -> {
+					assertNotNull(courseEntity.getCourseName(), "Course name should not be null");
+					assertNotNull(courseEntity.getCourseUrl(), "Course URL should not be null");
+					assertTrue(courseEntity.getCourseUrl().contains("courseEntity"), "Course URL should contain 'courseEntity'");
 				});
 			} else {
 				logger.warn("No courses found in profile");
@@ -87,13 +87,13 @@ class HtmlProfileParserTest {
 			logger.info("=== END STUDENT INFORMATION ===");
 
 			// Проверяем основные поля
-			assertNotNull(student.getStudentSurName(), "Surname should not be null");
-			assertNotNull(student.getStudentName(), "Name should not be null");
-			assertNotNull(student.getEmail(), "Email should not be null");
+			assertNotNull(studentEntity.getStudentSurName(), "Surname should not be null");
+			assertNotNull(studentEntity.getStudentName(), "Name should not be null");
+			assertNotNull(studentEntity.getEmail(), "Email should not be null");
 
 			logger.info("✅ Successfully parsed real URFU profile - Student: {} {}, Email: {}, Courses: {}",
-					student.getStudentSurName(), student.getStudentName(),
-					student.getEmail(), student.getCourseList().size());
+					studentEntity.getStudentSurName(), studentEntity.getStudentName(),
+					studentEntity.getEmail(), studentEntity.getCourseEntityList().size());
 
 		} catch (Exception e) {
 			logger.error("❌ Error reading or parsing real URFU profile file", e);
@@ -110,27 +110,27 @@ class HtmlProfileParserTest {
 		String password = "testPassword123";
 
 		// When
-		Student student = htmlProfileParser.parseStudentProfile(html, password);
+		StudentEntity studentEntity = htmlProfileParser.parseStudentProfile(html, password);
 
 		// Then
-		assertNotNull(student, "Student should not be null");
-		logger.debug("Parsed student: {}", student);
+		assertNotNull(studentEntity, "Student should not be null");
+		logger.debug("Parsed student: {}", studentEntity);
 
-		assertEquals("Лутков", student.getStudentSurName());
-		assertEquals("Евгений", student.getStudentName());
-		assertEquals("Александрович", student.getPatronymic());
-		assertEquals("Evgeny.Lutkov@urfu.me", student.getEmail());
-		assertEquals("Asia/Yekaterinburg", student.getTimeZone());
-		assertEquals("Бакалавр", student.getEducationStatus());
-		assertEquals("РИ-420942", student.getAcademicGroup());
-		assertEquals("09203251", student.getStudentNumber());
-		assertEquals("testPassword123", student.getPassword());
-		assertNotNull(student.getCourseList());
-		assertEquals(5, student.getCourseList().size());
+		assertEquals("Лутков", studentEntity.getStudentSurName());
+		assertEquals("Евгений", studentEntity.getStudentName());
+		assertEquals("Александрович", studentEntity.getPatronymic());
+		assertEquals("Evgeny.Lutkov@urfu.me", studentEntity.getEmail());
+		assertEquals("Asia/Yekaterinburg", studentEntity.getTimeZone());
+		assertEquals("Бакалавр", studentEntity.getEducationStatus());
+		assertEquals("РИ-420942", studentEntity.getAcademicGroup());
+		assertEquals("09203251", studentEntity.getStudentNumber());
+		assertEquals("testPassword123", studentEntity.getPassword());
+		assertNotNull(studentEntity.getCourseEntityList());
+		assertEquals(5, studentEntity.getCourseEntityList().size());
 
-		// Verify first course
+		// Verify first courseEntity
 		assertEquals("Базовая архитектура программного обеспечения",
-				student.getCourseList().getFirst().getCourseName());
+				studentEntity.getCourseEntityList().getFirst().getCourseName());
 
 		logger.info("testParseValidProfile completed successfully");
 	}
@@ -204,11 +204,11 @@ class HtmlProfileParserTest {
                                             <dt>Участник курсов</dt>
                                             <dd>
                                                 <ul>
-                                                    <li><a href="https://elearn.urfu.ru/course/view.php?id=6736">Базовая архитектура программного обеспечения</a></li>
-                                                    <li><a href="https://elearn.urfu.ru/course/view.php?id=8053">Бизнес-аналитика (2024)</a></li>
-                                                    <li><a href="https://elearn.urfu.ru/course/view.php?id=4471">Основы программирования на примере C#, 2 часть</a></li>
-                                                    <li><a href="https://elearn.urfu.ru/course/view.php?id=7055">Создание мобильных приложений Qt Quick</a></li>
-                                                    <li><a href="https://elearn.urfu.ru/course/view.php?id=5882">Технологии программирования на Python (2 курс, ИРИТ-РТФ)</a></li>
+                                                    <li><a href="https://elearn.urfu.ru/courseEntity/view.php?id=6736">Базовая архитектура программного обеспечения</a></li>
+                                                    <li><a href="https://elearn.urfu.ru/courseEntity/view.php?id=8053">Бизнес-аналитика (2024)</a></li>
+                                                    <li><a href="https://elearn.urfu.ru/courseEntity/view.php?id=4471">Основы программирования на примере C#, 2 часть</a></li>
+                                                    <li><a href="https://elearn.urfu.ru/courseEntity/view.php?id=7055">Создание мобильных приложений Qt Quick</a></li>
+                                                    <li><a href="https://elearn.urfu.ru/courseEntity/view.php?id=5882">Технологии программирования на Python (2 курс, ИРИТ-РТФ)</a></li>
                                                 </ul>
                                             </dd>
                                         </dl>

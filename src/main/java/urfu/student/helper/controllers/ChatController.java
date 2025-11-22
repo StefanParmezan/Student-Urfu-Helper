@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import urfu.student.helper.ai.AiService;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 
 @AllArgsConstructor
 @RestController
@@ -19,9 +19,9 @@ public class ChatController {
         return aiService.callByChatId(message, chatId);
     }
 
-    @PostMapping("/new")
+    /*@PostMapping("/new")
     public Flux<String> call(String message) {
-        Student student; //TODO Получить всё таки студента
-        return aiService.callToNewChat(message, student);
-    }
+        StudentEntity studentEntity; //TODO Получить всё таки студента
+        return aiService.callToNewChat(message, studentEntity);
+    }*/
 }

@@ -7,8 +7,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import urfu.student.helper.models.student.Student;
-import urfu.student.helper.models.course.Course;
+import urfu.student.helper.models.student.StudentEntity;
+import urfu.student.helper.models.course.CourseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class HtmlProfileParser {
     // Паттерн для декодирования email из HTML entities
     private static final Pattern EMAIL_PATTERN = Pattern.compile("mailto:([^\"]+)");
 
-    public Student parseStudentProfile(String html, String plainPassword) {
+    public StudentEntity parseStudentProfile(String html, String plainPassword) {
         logger.info("Starting HTML profile parsing");
 
         if (html == null || html.trim().isEmpty()) {
@@ -32,7 +32,7 @@ public class HtmlProfileParser {
         }
 
         Document doc = Jsoup.parse(html);
-        Student student = new Student();
+        StudentEntity studentEntity = new StudentEntity();
 
         try {
             // Проверяем, что это действительно страница профиля УрФУ
@@ -42,29 +42,29 @@ public class HtmlProfileParser {
             }
 
             // Парсинг ФИО из реальной структуры УрФУ
-            parseFullNameFromUrfu(doc, student);
+            parseFullNameFromUrfu(doc, studentEntity);
 
             // Парсинг email из реальной структуры
-            parseEmailFromUrfu(doc, student);
+            parseEmailFromUrfu(doc, studentEntity);
 
             // Парсинг остальных полей из реальной структуры
-            parseStudentDetailsFromUrfu(doc, student);
+            parseStudentDetailsFromUrfu(doc, studentEntity);
 
             // Парсинг курсов из реальной структуры
-            parseCoursesFromUrfu(doc, student);
+            parseCoursesFromUrfu(doc, studentEntity);
 
             // Устанавливаем пароль
-            student.setPassword(plainPassword);
+            studentEntity.setPassword(plainPassword);
 
             logger.info("Successfully parsed URFU student profile for: {} {}",
-                    student.getStudentSurName(), student.getStudentName());
+                    studentEntity.getStudentSurName(), studentEntity.getStudentName());
 
         } catch (Exception e) {
             logger.error("Error parsing URFU student profile HTML", e);
             throw new RuntimeException("Failed to parse URFU student profile: " + e.getMessage(), e);
         }
 
-        return student;
+        return studentEntity;
     }
 
     private boolean isValidUrfuProfilePage(Document doc) {
@@ -80,14 +80,14 @@ public class HtmlProfileParser {
         return hasUrfuHeader && hasPageHeader && hasProfileTree && hasUserInfo;
     }
 
-    private void parseFullNameFromUrfu(Document doc, Student student) {
+    private void parseFullNameFromUrfu(Document doc, StudentEntity studentEntity) {
         try {
             // В реальном HTML УрФУ ФИО находится в нескольких местах, попробуем разные варианты
 
             // Способ 1: Из заголовка страницы
             Element nameElement = doc.selectFirst("h1.h2");
             if (nameElement != null) {
-                parseNameFromElement(nameElement, student);
+                parseNameFromElement(nameElement, studentEntity);
                 return;
             }
 
@@ -97,7 +97,7 @@ public class HtmlProfileParser {
                 String title = titleElement.text();
                 if (title.contains(":")) {
                     String nameFromTitle = title.split(":")[0].trim();
-                    parseNameFromString(nameFromTitle, student);
+                    parseNameFromString(nameFromTitle, studentEntity);
                     return;
                 }
             }
@@ -105,7 +105,7 @@ public class HtmlProfileParser {
             // Способ 3: Из page-header-headings
             Element pageHeader = doc.selectFirst(".page-header-headings h1");
             if (pageHeader != null) {
-                parseNameFromElement(pageHeader, student);
+                parseNameFromElement(pageHeader, studentEntity);
                 return;
             }
 
@@ -116,12 +116,12 @@ public class HtmlProfileParser {
         }
     }
 
-    private void parseNameFromElement(Element element, Student student) {
+    private void parseNameFromElement(Element element, StudentEntity studentEntity) {
         String fullName = element.text().trim();
-        parseNameFromString(fullName, student);
+        parseNameFromString(fullName, studentEntity);
     }
 
-    private void parseNameFromString(String fullName, Student student) {
+    private void parseNameFromString(String fullName, StudentEntity studentEntity) {
         logger.debug("Parsing name from string: {}", fullName);
 
         if (fullName.isEmpty()) {
@@ -134,31 +134,31 @@ public class HtmlProfileParser {
 
         // Логика разбора ФИО
         if (nameParts.length >= 3) {
-            student.setStudentSurName(nameParts[0]);
-            student.setStudentName(nameParts[1]);
-            student.setPatronymic(nameParts[2]);
+            studentEntity.setStudentSurName(nameParts[0]);
+            studentEntity.setStudentName(nameParts[1]);
+            studentEntity.setPatronymic(nameParts[2]);
         } else if (nameParts.length == 2) {
-            student.setStudentSurName(nameParts[0]);
-            student.setStudentName(nameParts[1]);
-            student.setPatronymic(""); // нет отчества
+            studentEntity.setStudentSurName(nameParts[0]);
+            studentEntity.setStudentName(nameParts[1]);
+            studentEntity.setPatronymic(""); // нет отчества
         } else if (nameParts.length == 1) {
-            student.setStudentSurName(nameParts[0]);
-            student.setStudentName("");
-            student.setPatronymic("");
+            studentEntity.setStudentSurName(nameParts[0]);
+            studentEntity.setStudentName("");
+            studentEntity.setPatronymic("");
         }
 
         logger.debug("Parsed name - Surname: '{}', Name: '{}', Patronymic: '{}'",
-                student.getStudentSurName(), student.getStudentName(), student.getPatronymic());
+                studentEntity.getStudentSurName(), studentEntity.getStudentName(), studentEntity.getPatronymic());
     }
 
-    private void parseEmailFromUrfu(Document doc, Student student) {
+    private void parseEmailFromUrfu(Document doc, StudentEntity studentEntity) {
         try {
             // В реальном HTML УрФУ email может быть в разных местах
 
             // Способ 1: Ищем по тексту "Адрес электронной почты"
             String email = findEmailByLabel(doc, "Адрес электронной почты");
             if (email != null) {
-                student.setEmail(email);
+                studentEntity.setEmail(email);
                 return;
             }
 
@@ -168,7 +168,7 @@ public class HtmlProfileParser {
                 String href = link.attr("href");
                 String foundEmail = decodeEmailFromHref(href);
                 if (foundEmail != null && !foundEmail.isEmpty()) {
-                    student.setEmail(foundEmail);
+                    studentEntity.setEmail(foundEmail);
                     logger.debug("Found email from mailto link: {}", foundEmail);
                     return;
                 }
@@ -239,16 +239,16 @@ public class HtmlProfileParser {
         return null;
     }
 
-    private void parseStudentDetailsFromUrfu(Document doc, Student student) {
+    private void parseStudentDetailsFromUrfu(Document doc, StudentEntity studentEntity) {
         // Парсим различные поля из реальной структуры УрФУ
-        findAndSetDetail(doc, "Часовой пояс", student::setTimeZone);
-        findAndSetDetail(doc, "Должность", student::setEducationStatus);
-        findAndSetDetail(doc, "Academic_group", student::setAcademicGroup);
-        findAndSetDetail(doc, "Student_number", student::setStudentNumber);
+        findAndSetDetail(doc, "Часовой пояс", studentEntity::setTimeZone);
+        findAndSetDetail(doc, "Должность", studentEntity::setEducationStatus);
+        findAndSetDetail(doc, "Academic_group", studentEntity::setAcademicGroup);
+        findAndSetDetail(doc, "Student_number", studentEntity::setStudentNumber);
 
         logger.debug("Parsed URFU student details - timeZone: '{}', educationStatus: '{}', academicGroup: '{}', studentNumber: '{}'",
-                student.getTimeZone(), student.getEducationStatus(),
-                student.getAcademicGroup(), student.getStudentNumber());
+                studentEntity.getTimeZone(), studentEntity.getEducationStatus(),
+                studentEntity.getAcademicGroup(), studentEntity.getStudentNumber());
     }
 
     private void findAndSetDetail(Document doc, String label, java.util.function.Consumer<String> setter) {
@@ -273,11 +273,11 @@ public class HtmlProfileParser {
         }
     }
 
-    private void parseCoursesFromUrfu(Document doc, Student student) {
+    private void parseCoursesFromUrfu(Document doc, StudentEntity studentEntity) {
         try {
             logger.debug("Starting course parsing from URFU profile");
 
-            List<Course> courses = new ArrayList<>();
+            List<CourseEntity> cours = new ArrayList<>();
 
             // Способ 1: Ищем курсы в секции "Информация о курсах"
             Elements courseSections = doc.select("section.node_category");
@@ -291,9 +291,9 @@ public class HtmlProfileParser {
                     if (!courseLinks.isEmpty()) {
                         logger.debug("Found {} course links in courses section", courseLinks.size());
                         for (Element link : courseLinks) {
-                            Course course = createCourseFromLink(link, student);
-                            if (course != null) {
-                                courses.add(course);
+                            CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
+                            if (courseEntity != null) {
+                                cours.add(courseEntity);
                             }
                         }
                     } else {
@@ -303,9 +303,9 @@ public class HtmlProfileParser {
                         for (Element listItem : listItems) {
                             Element link = listItem.selectFirst("a[href*=course]");
                             if (link != null) {
-                                Course course = createCourseFromLink(link, student);
-                                if (course != null) {
-                                    courses.add(course);
+                                CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
+                                if (courseEntity != null) {
+                                    cours.add(courseEntity);
                                 }
                             }
                         }
@@ -315,7 +315,7 @@ public class HtmlProfileParser {
             }
 
             // Способ 2: Ищем курсы по dt "Участник курсов"
-            if (courses.isEmpty()) {
+            if (cours.isEmpty()) {
                 logger.debug("Trying alternative course parsing by dt label");
                 Element coursesDt = doc.selectFirst("dt:contains(Участник курсов)");
                 if (coursesDt != null) {
@@ -327,9 +327,9 @@ public class HtmlProfileParser {
                         logger.debug("Found {} course links in dt parent", courseLinks.size());
 
                         for (Element link : courseLinks) {
-                            Course course = createCourseFromLink(link, student);
-                            if (course != null) {
-                                courses.add(course);
+                            CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
+                            if (courseEntity != null) {
+                                cours.add(courseEntity);
                             }
                         }
                     }
@@ -337,36 +337,36 @@ public class HtmlProfileParser {
             }
 
             // Способ 3: Ищем любые ссылки на курсы во всем профиле
-            if (courses.isEmpty()) {
+            if (cours.isEmpty()) {
                 logger.debug("Trying global course link search");
                 Elements allCourseLinks = doc.select(".profile_tree a[href*=course]");
                 logger.debug("Found {} course links in entire profile", allCourseLinks.size());
 
                 for (Element link : allCourseLinks) {
-                    Course course = createCourseFromLink(link, student);
-                    if (course != null) {
-                        courses.add(course);
+                    CourseEntity courseEntity = createCourseFromLink(link, studentEntity);
+                    if (courseEntity != null) {
+                        cours.add(courseEntity);
                     }
                 }
             }
 
-            student.setCourseList(courses);
-            logger.info("Successfully parsed {} URFU courses", courses.size());
+            studentEntity.setCourseEntityList(cours);
+            logger.info("Successfully parsed {} URFU courses", cours.size());
 
         } catch (Exception e) {
             logger.error("Error parsing URFU courses", e);
-            student.setCourseList(new ArrayList<>()); // устанавливаем пустой список в случае ошибки
+            studentEntity.setCourseEntityList(new ArrayList<>()); // устанавливаем пустой список в случае ошибки
         }
     }
 
-    private Course createCourseFromLink(Element link, Student student) {
+    private CourseEntity createCourseFromLink(Element link, StudentEntity studentEntity) {
         try {
             String courseName = link.text().trim();
             String courseUrl = link.attr("href");
 
             if (!courseName.isEmpty() && !courseName.matches("https?://.*")) {
-                Course course = new Course();
-                course.setCourseName(courseName);
+                CourseEntity courseEntity = new CourseEntity();
+                courseEntity.setCourseName(courseName);
 
                 // Обеспечиваем полный URL если нужно
                 if (courseUrl.startsWith("/")) {
@@ -374,12 +374,12 @@ public class HtmlProfileParser {
                 } else if (!courseUrl.startsWith("http")) {
                     courseUrl = "https://elearn.urfu.ru/" + courseUrl;
                 }
-                course.setCourseUrl(courseUrl);
+                courseEntity.setCourseUrl(courseUrl);
 
-                course.setStudent(student);
+                courseEntity.setStudentEntity(studentEntity);
 
                 logger.trace("Parsed URFU course: {} -> {}", courseName, courseUrl);
-                return course;
+                return courseEntity;
             }
         } catch (Exception e) {
             logger.error("Error creating course from link", e);

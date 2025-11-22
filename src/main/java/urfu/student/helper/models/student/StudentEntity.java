@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import urfu.student.helper.models.chat.ChatEntity;
-import urfu.student.helper.models.course.Course;
+import urfu.student.helper.models.course.CourseEntity;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +16,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class StudentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -48,9 +48,9 @@ public class Student {
     @Column(name="student_email", unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "studentEntity")
     @ToString.Exclude
-    private List<Course> courseList;
+    private List<CourseEntity> courseEntityList;
 
     @OneToMany(mappedBy = "owner")
     @ToString.Exclude
@@ -63,8 +63,8 @@ public class Student {
         Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Student student = (Student) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        StudentEntity studentEntity = (StudentEntity) o;
+        return getId() != null && Objects.equals(getId(), studentEntity.getId());
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import reactor.core.publisher.Flux;
 import urfu.student.helper.models.chat.ChatEntity;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 import urfu.student.helper.services.chat.ChatService;
 
 import java.util.function.Consumer;
@@ -16,8 +16,8 @@ public class AiServiceImpl implements AiService {
     private final ChatClient client;
 
     @Override
-    public Flux<String> callToNewChat(String input, Student student) {
-        ChatEntity chat = chatService.create(student);
+    public Flux<String> callToNewChat(String input, StudentEntity studentEntity) {
+        ChatEntity chat = chatService.create(studentEntity);
         return callByChatId(input, chat.getId());
     }
 

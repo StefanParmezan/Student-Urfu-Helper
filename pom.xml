@@ -8,7 +8,7 @@
 		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>urfu.student</groupId>
+	<groupId>urfu.studentEntity</groupId>
 	<artifactId>helper</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>helper</name>

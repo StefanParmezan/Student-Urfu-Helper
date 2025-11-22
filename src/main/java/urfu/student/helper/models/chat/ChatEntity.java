@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import urfu.student.helper.models.message.MessageEntity;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class ChatEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     @ToString.Exclude
-    private Student owner;
+    private StudentEntity owner;
 
     @OneToMany(mappedBy = "chat")
     @ToString.Exclude

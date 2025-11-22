@@ -3,7 +3,7 @@ package urfu.student.helper.models.course;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Course {
+public class CourseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -29,7 +29,7 @@ public class Course {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     @ToString.Exclude
-    private Student student;
+    private StudentEntity studentEntity;
 
     @Override
     public final boolean equals(Object o) {
@@ -38,8 +38,8 @@ public class Course {
         Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Course course = (Course) o;
-        return getId() != null && Objects.equals(getId(), course.getId());
+        CourseEntity courseEntity = (CourseEntity) o;
+        return getId() != null && Objects.equals(getId(), courseEntity.getId());
     }
 
     @Override

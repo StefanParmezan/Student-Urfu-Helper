@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import urfu.student.helper.models.student.Student;
+import urfu.student.helper.models.student.StudentEntity;
 import urfu.student.helper.repositories.StudentRepository;
 
 @Service
@@ -18,7 +18,7 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Student getStudentById(Long id){
+    public StudentEntity getStudentById(Long id){
         return studentRepository.getStudentById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id `%s` not found".formatted(id)));
     }
