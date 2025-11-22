@@ -59,6 +59,7 @@ class HtmlProfileParserTest {
 
 			// Выводим всю информацию о студенте для проверки
 			logger.info("=== PARSED STUDENT INFORMATION ===");
+			logger.info("Id: {}", studentEntity.getId());
 			logger.info("Surname: {}", studentEntity.getStudentSurName());
 			logger.info("Name: {}", studentEntity.getStudentName());
 			logger.info("Patronymic: {}", studentEntity.getPatronymic());

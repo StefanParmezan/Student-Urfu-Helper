@@ -25,7 +25,6 @@ public class CourseEntity {
     @Column(name="course_url")
     private String courseUrl;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     @ToString.Exclude

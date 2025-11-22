@@ -39,6 +39,7 @@ logging:
       helper:
         security: "DEBUG"
 
+
 server:
   port: ${APPLICATION_PORT}
 
@@ -47,6 +48,10 @@ app:
     secret: ${JWT_SECRET}
     expiration: ${EXPIRATION_TIME}
 
+urfu:
+  api:
+    auth-url: "https://elearn.urfu.ru/my"
+    profile-url: "https://elearn.urfu.ru/profile.php"
 
   session:
     timeout-minutes: "120"

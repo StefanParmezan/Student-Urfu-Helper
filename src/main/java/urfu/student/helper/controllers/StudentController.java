@@ -10,6 +10,4 @@ import urfu.student.helper.db.student.StudentService;
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
-
-
 }
