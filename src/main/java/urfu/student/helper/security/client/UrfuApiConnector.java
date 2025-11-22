@@ -16,9 +16,8 @@ import urfu.student.helper.security.config.UrfuApiConfig;
 public class UrfuApiConnector {
     private static final Logger logger = LoggerFactory.getLogger(UrfuApiConnector.class);
     private final UrfuApiConfig urfuApiConfig;
-
-
     private final RestTemplate restTemplate;
+
     public String authenticateAndGetProfile(String email, String password) {
         logger.info("Attempting URFU authentication for email: {}", email);
 
