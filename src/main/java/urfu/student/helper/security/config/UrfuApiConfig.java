@@ -11,5 +11,4 @@ public class UrfuApiConfig {
     private String baseUrl;
     private String authEndpoint;
     private String profileEndpoint;
-
 }

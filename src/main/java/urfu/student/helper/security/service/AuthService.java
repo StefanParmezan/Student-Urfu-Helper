@@ -15,6 +15,7 @@ public class AuthService {
     public Mono<StudentEntity> fuckingPhpStudentSaveAndAuth(AuthRequest authRequest){
         Mono<String> phpDocument = urfuApiConnector.authenticate(authRequest);
 
+        return null;
     }
 
 }

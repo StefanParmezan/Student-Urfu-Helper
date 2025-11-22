@@ -20,7 +20,7 @@ public class HtmlProfileParser {
 
     private static final Logger logger = LoggerFactory.getLogger(HtmlProfileParser.class);
 
-    // Паттерн для декодирования email из HTML entities
+    // Паттерн для декодирования username из HTML entities
     private static final Pattern EMAIL_PATTERN = Pattern.compile("mailto:([^\"]+)");
 
     public StudentEntity parseStudentProfile(String html, String plainPassword) {
@@ -44,7 +44,7 @@ public class HtmlProfileParser {
             // Парсинг ФИО из реальной структуры УрФУ
             parseFullNameFromUrfu(doc, studentEntity);
 
-            // Парсинг email из реальной структуры
+            // Парсинг username из реальной структуры
             parseEmailFromUrfu(doc, studentEntity);
 
             // Парсинг остальных полей из реальной структуры
@@ -153,7 +153,7 @@ public class HtmlProfileParser {
 
     private void parseEmailFromUrfu(Document doc, StudentEntity studentEntity) {
         try {
-            // В реальном HTML УрФУ email может быть в разных местах
+            // В реальном HTML УрФУ username может быть в разных местах
 
             // Способ 1: Ищем по тексту "Адрес электронной почты"
             String email = findEmailByLabel(doc, "Адрес электронной почты");
@@ -169,7 +169,7 @@ public class HtmlProfileParser {
                 String foundEmail = decodeEmailFromHref(href);
                 if (foundEmail != null && !foundEmail.isEmpty()) {
                     studentEntity.setEmail(foundEmail);
-                    logger.debug("Found email from mailto link: {}", foundEmail);
+                    logger.debug("Found username from mailto link: {}", foundEmail);
                     return;
                 }
             }
@@ -177,7 +177,7 @@ public class HtmlProfileParser {
             logger.warn("Email not found in URFU profile");
 
         } catch (Exception e) {
-            logger.error("Error parsing email from URFU profile", e);
+            logger.error("Error parsing username from URFU profile", e);
         }
     }
 
@@ -199,7 +199,7 @@ public class HtmlProfileParser {
                         Element ddElement = labelElement.nextElementSibling();
                         if (ddElement != null) {
                             String text = ddElement.text();
-                            // Попробуем извлечь email из текста
+                            // Попробуем извлечь username из текста
                             Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
                             Matcher matcher = emailPattern.matcher(text);
                             if (matcher.find()) {
@@ -210,7 +210,7 @@ public class HtmlProfileParser {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error finding email by label: {}", label, e);
+            logger.error("Error finding username by label: {}", label, e);
         }
 
         return null;
@@ -222,7 +222,7 @@ public class HtmlProfileParser {
         }
 
         try {
-            // Извлекаем email из mailto:encoded-email
+            // Извлекаем username из mailto:encoded-email
             Matcher matcher = EMAIL_PATTERN.matcher(href);
             if (matcher.find()) {
                 String encodedEmail = matcher.group(1);
@@ -233,7 +233,7 @@ public class HtmlProfileParser {
                 return decodedEmail;
             }
         } catch (Exception e) {
-            logger.error("Error decoding email from href: {}", href, e);
+            logger.error("Error decoding username from href: {}", href, e);
         }
 
         return null;

@@ -50,7 +50,7 @@ app:
 
 urfu:
   api:
-    base-url: https://elearn.urfu.ru
+    base-url: "https://elearn.urfu.ru"
     auth-endpoint: "/my"
     profile-endpoint: "/profile.php"
 

@@ -28,7 +28,7 @@ public class JwtService {
     }
 
     public String generateToken(String email) {
-        logger.info("Generating JWT token for email: {}", email);
+        logger.info("Generating JWT token for username: {}", email);
 
         try {
             String token = Jwts.builder()
@@ -38,26 +38,26 @@ public class JwtService {
                     .signWith(getSigningKey())
                     .compact();
 
-            logger.debug("JWT token generated successfully for email: {}", email);
+            logger.debug("JWT token generated successfully for username: {}", email);
             return token;
 
         } catch (Exception e) {
-            logger.error("Error generating JWT token for email: {}", email, e);
+            logger.error("Error generating JWT token for username: {}", email, e);
             throw new RuntimeException("Failed to generate JWT token", e);
         }
     }
 
     public String extractEmail(String token) {
-        logger.debug("Extracting email from JWT token");
+        logger.debug("Extracting username from JWT token");
 
         try {
             String email = extractAllClaims(token).getSubject();
-            logger.debug("Successfully extracted email: {} from token", email);
+            logger.debug("Successfully extracted username: {} from token", email);
             return email;
 
         } catch (Exception e) {
-            logger.error("Error extracting email from JWT token", e);
-            throw new RuntimeException("Failed to extract email from token", e);
+            logger.error("Error extracting username from JWT token", e);
+            throw new RuntimeException("Failed to extract username from token", e);
         }
     }
 

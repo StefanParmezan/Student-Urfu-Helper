@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-import urfu.student.helper.security.client.UrfuApiConnector;
 import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.security.dto.AuthResponse;
 import urfu.student.helper.security.service.AuthService;
@@ -23,6 +22,6 @@ public class AuthController {
 
     @PostMapping
     public Mono<AuthResponse> auth(@RequestBody AuthRequest data) {
-        return service.fuckingPhpStudentSaveAndAuth(data);
+        return null;
     }
 }
