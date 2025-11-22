@@ -17,15 +17,15 @@ public class DbChatMemory implements ChatMemory {
 
     @Override
     @Transactional
-    public void add(@NonNull String conversationId, @NonNull List<Message> messages) {
-        messageService.save(Long.parseLong(conversationId), messages);
+    public void add(@NonNull String chatId, @NonNull List<Message> messages) {
+        messageService.save(Long.parseLong(chatId), messages);
     }
 
     @Override
     @NonNull
     @Transactional
-    public List<Message> get(@NonNull String conversationId) {
-        return messageService.getAsSpringAiMessages(Long.parseLong(conversationId));
+    public List<Message> get(@NonNull String chatId) {
+        return messageService.getAsSpringAiMessages(Long.parseLong(chatId));
     }
 
     @Override

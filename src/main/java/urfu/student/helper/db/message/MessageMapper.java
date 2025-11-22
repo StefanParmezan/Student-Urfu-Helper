@@ -1,0 +1,24 @@
+package urfu.student.helper.db.message;
+
+import lombok.NonNull;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.ai.chat.messages.*;
+import urfu.student.helper.db.chat.ChatEntity;
+
+import static org.springframework.ai.chat.messages.MessageType.*;
+
+@Mapper(componentModel = "spring")
+public interface MessageMapper {
+
+    MessageEntity toEntity(Message message, ChatEntity chat);
+
+    default Message toAiMessage(@NonNull MessageEntity entity) {
+        return switch (entity.getType()) {
+            case ASSISTANT -> new AssistantMessage(entity.getText());
+            case SYSTEM -> new SystemMessage(entity.getText());
+            case USER -> new UserMessage(entity.getText());
+            case TOOL -> throw new UnsupportedOperationException(TOOL + " type is not supported yet");
+        };
+    }
+}

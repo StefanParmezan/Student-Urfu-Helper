@@ -3,6 +3,7 @@ package urfu.student.helper.db.message;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.ai.chat.messages.MessageType;
 import urfu.student.helper.db.chat.ChatEntity;
 
 import java.util.Objects;
@@ -19,6 +20,10 @@ public class MessageEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    private String text;
+
+    private MessageType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")

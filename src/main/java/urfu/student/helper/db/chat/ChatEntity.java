@@ -17,6 +17,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatEntity {
+    public ChatEntity(StudentEntity student) {
+        student.getChats().add(this);
+        setOwner(student);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)

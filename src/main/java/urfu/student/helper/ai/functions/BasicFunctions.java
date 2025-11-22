@@ -2,7 +2,9 @@ package urfu.student.helper.ai.functions;
 
 import lombok.AllArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import urfu.student.helper.ai.StudentHolder;
+import urfu.student.helper.ai.functions.service.AiFunctionService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,6 +12,7 @@ import java.time.ZoneId;
 @AllArgsConstructor
 public class BasicFunctions {
     private final StudentHolder holder;
+    private final AiFunctionService service;
 
 
     @Tool(name = "getDateTime", description = "Говорит тебе текущие дату и время пользователя")
@@ -20,17 +23,12 @@ public class BasicFunctions {
 
     @Tool(name = "getGeneralCoursesList", description = "Говорит тебе все существующие курсы. Полезно чтобы узначть что ты можешь предложить студенту")
     public String getGeneralCoursesList() {
-        return null;
+        return service.getAllCourses().toString();
     }
 
     @Tool(name = "getStudentCoursesList", description = "Говорит тебе курсы на которые уже записан студент с которым ты работаешь")
     public String getStudentCoursesList() {
-        return null;
-    }
-
-    @Tool(name = "getCourseDescription", description = "Говорит тебе описание конкретного курса")
-    public String getCourseDescription() {
-        return null;
+        return service.getStudentCourses(holder.getStudent()).toString();
     }
 
 }

@@ -1,6 +1,6 @@
-package urfu.student.helper.ai.functions;
+package urfu.student.helper.ai.functions.service;
 
-import urfu.student.helper.db.course.CourseAiDTO;
+import urfu.student.helper.db.course.dto.CourseAiDTO;
 import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.List;
@@ -8,8 +8,7 @@ import java.util.List;
 /**
  * Главный интерфейс и точка горячей замены реализаций
  */
-public interface CourseService {
-    List<CourseAiDTO> getGeneralCourses();
+public interface AiFunctionService {
+    List<CourseAiDTO> getAllCourses();
     List<CourseAiDTO> getStudentCourses(StudentEntity student);
-    String getCourseDescription(String courseName);
 }
