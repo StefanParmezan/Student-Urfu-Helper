@@ -8,7 +8,9 @@ import urfu.student.helper.db.chat.ChatEntity;
 import urfu.student.helper.db.course.CourseEntity;
 
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Entity(name="student")
@@ -40,7 +42,7 @@ public class StudentEntity {
     private ZoneId timeZone;
 
     @Column(name="education_status")
-    private String educationStatus; //TODO to Enum
+    private EducationStatus educationStatus;
 
     @Column(name="academic_group")
     private String academicGroup;
@@ -63,6 +65,10 @@ public class StudentEntity {
         this.timeZone = ZoneId.of(timeZone);
     }
 
+    public void setEducationStatus(String educationStatus) {
+        this.educationStatus = EducationStatus.getByName(educationStatus);
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -77,5 +83,27 @@ public class StudentEntity {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @AllArgsConstructor
+    public enum EducationStatus {
+        BAKALAVRIAT("Бакалавриат"),
+        SPECIALITET("Специалитет"),
+        MAGISTRATURA("Магистратура");
+
+        @Getter
+        private final String name;
+
+        private static final Map<String, EducationStatus> LOOKUP_MAP = new HashMap<>();
+
+        static {
+            for (EducationStatus value : values()) {
+                LOOKUP_MAP.put(value.getName().toLowerCase(), value);
+            }
+        }
+
+        public static EducationStatus getByName(String name) {
+            return LOOKUP_MAP.get(name.toLowerCase());
+        }
     }
 }
