@@ -12,7 +12,7 @@ import urfu.student.helper.ai.AiService;
 public class ChatController {
     private final AiService aiService;
 
-    public Flux<String> call(String message) {
-        return aiService.call(message); //todo КАК ПОЛУЧИТЬ ПОЛЬЗОВАТЕЛЯ
+    public Flux<String> call(String message, Long chatId) {
+        return aiService.callByChatId(message, chatId);
     }
 }

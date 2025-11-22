@@ -4,5 +4,6 @@ import reactor.core.publisher.Flux;
 import urfu.student.helper.models.student.Student;
 
 public interface AiService {
-    Flux<String> call(String userRequest, Student user);
+    Flux<String> callToNewChat(String userRequest, Student student);
+    Flux<String> callByChatId(String userRequest, Long chatId);
 }
