@@ -13,10 +13,10 @@ import urfu.student.helper.ai.AiService;
 public class ChatController {
     private final AiService aiService;
 
-    @PostMapping("/{chatId}")
-    public Flux<String> call(String message, Long chatId) {
-        return aiService.callByChatId(message, chatId);
-    }
+//    @PostMapping("/{chatId}")
+//    public Flux<String> call(String message, Long chatId) {
+//        return aiService.callByChatId(message, chatId);
+//    }
 
     /*@PostMapping("/new")
     public Flux<String> call(String message) {
