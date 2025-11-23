@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.dto.StudentRegistryDTO;
 import urfu.student.helper.security.dto.CourseDto;
 
@@ -19,65 +20,117 @@ public class ProfileParser extends SeleniumParser {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-    public StudentRegistryDTO parseStudentProfile(String email, String password) {
-        login(email, password);
+    public Mono<StudentRegistryDTO> parseStudentProfile(String email, String password) {
+        return login(email, password)
+                .flatMap(loginResult -> {
+                    getDriver().get("https://elearn.urfu.ru/user/profile.php");
+                    WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
 
-        getDriver().get("https://elearn.urfu.ru/user/profile.php");
-        WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
+                    try {
+                        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".userprofile")));
 
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".userprofile")));
+                        String fio = extractFio(wait);
+                        String studentEmail = extractEmail(wait);
+                        String timeZone = extractTimeZone(wait);
+                        String educationStatus = extractEducationStatus(wait);
+                        String academicGroup = extractAcademicGroup(wait);
+                        String studentNumber = extractStudentNumber(wait);
 
-            String fio = extractFio(wait);
-            String studentEmail = extractEmail(wait);
-            String timeZone = extractTimeZone(wait);
-            String educationStatus = extractEducationStatus(wait);
-            String academicGroup = extractAcademicGroup(wait);
-            String studentNumber = extractStudentNumber(wait);
-            List<CourseDto> courses = extractCourses();
+                        return extractCourses()
+                                .map(courses -> new StudentRegistryDTO(fio, timeZone, educationStatus, academicGroup, studentNumber, studentEmail, courses));
 
-            return new StudentRegistryDTO(fio, timeZone, educationStatus, academicGroup, studentNumber, studentEmail, courses);
-
-        } catch (Exception e) {
-            log.error("Ошибка при парсинге профиля: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка при получении данных профиля");
-        }
+                    } catch (Exception e) {
+                        log.error("Ошибка при парсинге профиля: {}", e.getMessage());
+                        return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка при получении данных профиля"));
+                    }
+                });
     }
 
-    public void login(String email, String password) {
+    public Mono<Boolean> login(String email, String password) {
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email и пароль не могут быть пустыми");
+            return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email и пароль не могут быть пустыми"));
         }
 
-        getDriver().get("https://elearn.urfu.ru/my/");
-        WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
+        return Mono.fromCallable(() -> {
+            getDriver().get("https://elearn.urfu.ru/my/");
+            WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
 
-        try {
-            WebElement emailInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("userNameInput")));
-            WebElement passwordInput = getDriver().findElement(By.id("passwordInput"));
-            WebElement submitButton = getDriver().findElement(By.id("submitButton"));
+            try {
+                WebElement emailInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("userNameInput")));
+                WebElement passwordInput = getDriver().findElement(By.id("passwordInput"));
+                WebElement submitButton = getDriver().findElement(By.id("submitButton"));
 
-            emailInput.clear();
-            emailInput.sendKeys(email);
-            passwordInput.clear();
-            passwordInput.sendKeys(password);
-            submitButton.click();
+                emailInput.clear();
+                emailInput.sendKeys(email);
+                passwordInput.clear();
+                passwordInput.sendKeys(password);
+                submitButton.click();
 
-            wait.until(ExpectedConditions.or(
-                    ExpectedConditions.urlContains("elearn.urfu.ru/my/"),
-                    ExpectedConditions.presenceOfElementLocated(By.id("userNameInput"))
-            ));
+                wait.until(ExpectedConditions.or(
+                        ExpectedConditions.urlContains("elearn.urfu.ru/my/"),
+                        ExpectedConditions.presenceOfElementLocated(By.id("userNameInput"))
+                ));
 
-            if (!getDriver().findElements(By.id("userNameInput")).isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверные учетные данные");
+                if (!getDriver().findElements(By.id("userNameInput")).isEmpty()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверные учетные данные");
+                }
+
+                return true;
+
+            } catch (ResponseStatusException e) {
+                throw e;
+            } catch (Exception e) {
+                log.error("Ошибка при логине: {}", e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка аутентификации");
+            }
+        });
+    }
+
+    private Mono<List<CourseDto>> extractCourses() {
+        return Mono.fromCallable(() -> {
+            List<CourseDto> courses = new ArrayList<>();
+
+            try {
+                // Переходим на страницу с курсами
+                getDriver().get("https://elearn.urfu.ru/my/courses.php");
+                WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
+
+                // Ждем загрузки курсов
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dashboard-card, .course-info-container")));
+
+                // Ищем курсы в карточках
+                List<WebElement> courseCards = getDriver().findElements(
+                        By.cssSelector(".dashboard-card[data-region='course-content']")
+                );
+
+                if (courseCards.isEmpty()) {
+                    log.info("Курсы не найдены на странице courses.php");
+                    return courses;
+                }
+
+                log.info("Найдено карточек курсов: {}", courseCards.size());
+
+                for (WebElement card : courseCards) {
+                    try {
+                        String name = extractCourseNameFromCard(card);
+                        String courseCategory = extractCourseCategoryFromCard(card);
+                        String url = extractCourseUrlFromCard(card);
+
+                        if (name != null && !name.isEmpty() && !name.equals("Образцы сайтов курсов")) {
+                            courses.add(new CourseDto(name, courseCategory, url));
+                            log.info("Добавлен курс: {}", name);
+                        }
+                    } catch (Exception e) {
+                        log.warn("Ошибка при парсинге карточки курса: {}", e.getMessage());
+                    }
+                }
+
+            } catch (Exception e) {
+                log.error("Ошибка при получении курсов: {}", e.getMessage());
             }
 
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Ошибка при логине: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка аутентификации");
-        }
+            return courses;
+        });
     }
 
     private String extractFio(WebDriverWait wait) {
@@ -133,7 +186,7 @@ public class ProfileParser extends SeleniumParser {
     private String extractEducationStatus(WebDriverWait wait) {
         // Ищем статус образования в различных возможных местах
         List<WebElement> educationElements = getDriver().findElements(
-                By.xpath("//dt[contains(text(), 'Должность') or contains(text(), 'Статус') or contains(text(), 'Education')]/following-sibling::dd")
+                By.xpath("//dt[contains(text(), 'Образование') or contains(text(), 'Статус') or contains(text(), 'Education')]/following-sibling::dd")
         );
         if (!educationElements.isEmpty()) {
             return educationElements.get(0).getText();
@@ -170,51 +223,6 @@ public class ProfileParser extends SeleniumParser {
         return "";
     }
 
-    private List<CourseDto> extractCourses() {
-        List<CourseDto> courses = new ArrayList<>();
-
-        try {
-            // Переходим на страницу с курсами
-            getDriver().get("https://elearn.urfu.ru/my/courses.php");
-            WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
-
-            // Ждем загрузки курсов
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dashboard-card, .course-info-container")));
-
-            // Ищем курсы в карточках
-            List<WebElement> courseCards = getDriver().findElements(
-                    By.cssSelector(".dashboard-card[data-region='course-content']")
-            );
-
-            if (courseCards.isEmpty()) {
-                log.info("Курсы не найдены на странице courses.php");
-                return courses;
-            }
-
-            log.info("Найдено карточек курсов: {}", courseCards.size());
-
-            for (WebElement card : courseCards) {
-                try {
-                    String name = extractCourseNameFromCard(card);
-                    String courseCategory = extractCourseCategoryFromCard(card);
-                    String url = extractCourseUrlFromCard(card);
-
-                    if (name != null && !name.isEmpty() && !name.equals("Образцы сайтов курсов")) {
-                        courses.add(new CourseDto(name, courseCategory, url));
-                        log.info("Добавлен курс: {}", name);
-                    }
-                } catch (Exception e) {
-                    log.warn("Ошибка при парсинге карточки курса: {}", e.getMessage());
-                }
-            }
-
-        } catch (Exception e) {
-            log.error("Ошибка при получении курсов: {}", e.getMessage());
-        }
-
-        return courses;
-    }
-
     private String extractCourseNameFromCard(WebElement card) {
         try {
             // Ищем название курса в элементе с классом multiline
@@ -244,36 +252,6 @@ public class ProfileParser extends SeleniumParser {
             return linkElement.getAttribute("href");
         } catch (Exception e) {
             log.warn("Не удалось извлечь URL курса: {}", e.getMessage());
-            return "";
-        }
-    }
-
-    private String extractCourseName(WebElement container) {
-        try {
-            // Различные селекторы для названия курса
-            WebElement nameElement = container.findElement(By.cssSelector(".coursename, .course-title, .card-title, h3, h4"));
-            return nameElement.getText().trim();
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    private String extractCourseCategory(WebElement container) {
-        try {
-            // Различные селекторы для категории курса
-            WebElement categoryElement = container.findElement(By.cssSelector(".text-muted, .categoryname, .course-category, .muted"));
-            return categoryElement.getText().trim();
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    private String extractCourseUrl(WebElement container) {
-        try {
-            // Ищем ссылку на курс
-            WebElement linkElement = container.findElement(By.cssSelector("a[href*='course/view.php']"));
-            return linkElement.getAttribute("href");
-        } catch (Exception e) {
             return "";
         }
     }
