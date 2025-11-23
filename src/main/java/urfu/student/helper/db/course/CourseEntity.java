@@ -22,6 +22,9 @@ public class CourseEntity {
     @Column(name = "course_name")
     private String courseName;
 
+    @Column(name = "course_category")
+    private String courseCategory;
+
     @Column(name="course_url")
     private String courseUrl;
 
