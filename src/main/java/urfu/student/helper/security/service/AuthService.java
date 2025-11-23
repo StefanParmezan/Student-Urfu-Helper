@@ -23,25 +23,27 @@ public class AuthService {
 
     private final StudentRepository studentRepository;
 
-    private final ProfileParser profileParser;
-
     private final PasswordEncoder passwordEncoder;
 
 
     public StudentDTO save(AuthRequest authRequest){
-        Mono<StudentRegistryDTO> studentRegistryDTO = profileParser.parseStudentProfile(authRequest);
-        String password = passwordEncoder.encode(authRequest.password());
-        Mono<StudentEntity> student = studentRegistryDTO.map((studentRegistryDTO1) -> new StudentEntity(
-                studentRegistryDTO1.studentFio(),
-                password,
-                studentRegistryDTO1.timeZone(),
-                StudentEntity.EducationStatus.getByName(studentRegistryDTO1.educationStatus()),
-                studentRegistryDTO1.academicGroup(),
-                studentRegistryDTO1.studentNumber(),
-                studentRegistryDTO1.studentEmail(),
-                studentRegistryDTO1.courses().stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()
-                ));
-        return StudentDTO.of(studentRepository.save(student));
+        try (ProfileParser parser = new ProfileParser()) {
+            Mono<StudentRegistryDTO> studentRegistryDTO = parser.parseStudentProfile(authRequest);
+            String password = passwordEncoder.encode(authRequest.password());
+            Mono<StudentEntity> student = studentRegistryDTO.map((studentRegistryDTO1) -> new StudentEntity(
+                    studentRegistryDTO1.studentFio(),
+                    password,
+                    studentRegistryDTO1.timeZone(),
+                    StudentEntity.EducationStatus.getByName(studentRegistryDTO1.educationStatus()),
+                    studentRegistryDTO1.academicGroup(),
+                    studentRegistryDTO1.studentNumber(),
+                    studentRegistryDTO1.studentEmail(),
+                    studentRegistryDTO1.courses().stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()
+            ));
+            return StudentDTO.of(studentRepository.save(student));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
