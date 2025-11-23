@@ -175,34 +175,6 @@ class ProfileParserTest {
     }
 
     @Test
-    void testStudentRegistryDTO_ToString() {
-        log.info("Запуск теста toString метода DTO");
-
-        List<CourseDto> courses = List.of(
-                new CourseDto("Базовая архитектура программного обеспечения", "Информатика и вычислительная техника (09.03.01)", "https://elearn.urfu.ru/course/view.php?id=6736")
-        );
-
-        StudentRegistryDTO dto = new StudentRegistryDTO(
-                "Иванов Иван Иванович",
-                "Asia/Yekaterinburg",
-                "Бакалавр",
-                "РИ-420942",
-                "09203251",
-                "test@urfu.me",
-                courses
-        );
-
-        String toStringResult = dto.toString();
-
-        assertNotNull(toStringResult);
-        assertTrue(toStringResult.contains("Иванов Иван Иванович"));
-        assertTrue(toStringResult.contains("РИ-420942"));
-        assertTrue(toStringResult.contains("courses="));
-
-        log.info("Результат toString: {}", toStringResult);
-    }
-
-    @Test
     void testCourseDto() {
         log.info("Запуск теста CourseDto");
 

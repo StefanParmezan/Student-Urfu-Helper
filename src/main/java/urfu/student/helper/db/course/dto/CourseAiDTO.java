@@ -1,12 +1,17 @@
 package urfu.student.helper.db.course.dto;
 
 public record CourseAiDTO (
-        Long id,
-        String name
+        String name,
+        String category,
+        String url
 ) implements Comparable<CourseAiDTO> {
     @Override
     public String toString() {
-        return name;
+        return "CourseAiDTO{" +
+                "name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 
     @Override
