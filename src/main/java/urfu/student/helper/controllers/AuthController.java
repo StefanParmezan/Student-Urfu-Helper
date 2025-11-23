@@ -17,6 +17,6 @@ public class AuthController {
 
     @PostMapping
     public Mono<AuthResponse> auth(@RequestBody AuthRequest data) {
-        return null;
+        return service.fuckingPhpStudentSaveAndAuth(data);
     }
 }
