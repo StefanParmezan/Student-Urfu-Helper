@@ -25,14 +25,8 @@ public class StudentEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name="student_name")
-    private String studentName;
-
-    @Column(name="student_surname")
-    private String studentSurName;
-
-    @Column(name="student_patronymic")
-    private String patronymic;
+    @Column(name="student_fio")
+    private String studentFio;
 
     @Column(name="password")
     private String password;
