@@ -233,7 +233,6 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
 
     private String extractCourseNameFromCard(WebElement card) {
         try {
-            // Ищем название курса в элементе с классом multiline
             WebElement nameElement = card.findElement(By.cssSelector(".coursename .multiline"));
             return nameElement.getText().trim();
         } catch (Exception e) {
@@ -244,7 +243,6 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
 
     private String extractCourseCategoryFromCard(WebElement card) {
         try {
-            // Ищем категорию курса в элементе с классом categoryname
             WebElement categoryElement = card.findElement(By.cssSelector(".categoryname"));
             return categoryElement.getText().trim();
         } catch (Exception e) {
@@ -255,7 +253,6 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
 
     private String extractCourseUrlFromCard(WebElement card) {
         try {
-            // Ищем ссылку на курс в элементе a с классом coursename
             WebElement linkElement = card.findElement(By.cssSelector(".coursename.aalink"));
             return linkElement.getAttribute("href");
         } catch (Exception e) {
