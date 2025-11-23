@@ -11,7 +11,9 @@ import urfu.student.helper.db.student.StudentRepository;
 import urfu.student.helper.db.student.dto.StudentDTO;
 import urfu.student.helper.db.student.dto.StudentRegistryDTO;
 import urfu.student.helper.security.dto.AuthRequest;
+import urfu.student.helper.security.dto.AuthResponse;
 import urfu.student.helper.security.dto.CourseDto;
+import urfu.student.helper.security.jwt.JwtService;
 import urfu.student.helper.security.parser.ProfileParser;
 
 import java.util.List;
@@ -25,23 +27,16 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JwtService service;
 
-    public Mono<StudentDTO> save(AuthRequest authRequest){
+
+    public Mono<AuthResponse> save(AuthRequest authRequest){
         try (ProfileParser parser = new ProfileParser()) {
-            Mono<StudentRegistryDTO> studentRegistryDTO = parser.parseStudentProfile(authRequest);
+            Mono<StudentEntity> studentMono = parser.parseStudentProfile(authRequest);
             String password = passwordEncoder.encode(authRequest.password());
-            Mono<StudentEntity> student = studentRegistryDTO.map((studentRegistryDTO1) -> new StudentEntity(
-                    studentRegistryDTO1.studentFio(),
-                    password,
-                    studentRegistryDTO1.timeZone(),
-                    StudentEntity.EducationStatus.getByName(studentRegistryDTO1.educationStatus()),
-                    studentRegistryDTO1.academicGroup(),
-                    studentRegistryDTO1.studentNumber(),
-                    studentRegistryDTO1.studentEmail(),
-                    studentRegistryDTO1.courses().stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()
-            ));
-            return student.map(studentRepository::save)
-                    .map(StudentDTO::of);
+            return studentMono.doOnNext(student -> student.setPassword(passwordEncoder.encode(student.getPassword())))
+                    .map(studentRepository::save)
+                    .map(student -> new AuthResponse(service.generateToken(student.getEmail()), StudentDTO.of(student)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

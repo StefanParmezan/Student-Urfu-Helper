@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import urfu.student.helper.db.student.StudentEntity;
 import urfu.student.helper.db.student.dto.StudentRegistryDTO;
 import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.security.dto.CourseDto;
@@ -23,7 +24,7 @@ public class ProfileParser extends SeleniumParser {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-    public Mono<StudentRegistryDTO> parseStudentProfile(AuthRequest authRequest) {
+    public Mono<StudentEntity> parseStudentProfile(AuthRequest authRequest) {
         return login(authRequest.username(), authRequest.password())
                 .flatMap(loginResult -> {
                     getDriver().get("https://elearn.urfu.ru/user/profile.php");
@@ -40,7 +41,11 @@ public class ProfileParser extends SeleniumParser {
                         String studentNumber = extractStudentNumber(wait);
 
                         return extractCourses()
-                                .map(courses -> new StudentRegistryDTO(fio, ZoneId.of(timeZone), educationStatus, academicGroup, studentNumber, studentEmail, courses));
+                                .map(courses -> new StudentEntity(null,
+                                        fio, ZoneId.of(timeZone),
+                                        StudentEntity.EducationStatus.getByName(educationStatus),
+                                        academicGroup, studentNumber,
+                                        studentEmail, courses.stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()));
 
                     } catch (Exception e) {
                         log.error("Ошибка при парсинге профиля: {}", e.getMessage());

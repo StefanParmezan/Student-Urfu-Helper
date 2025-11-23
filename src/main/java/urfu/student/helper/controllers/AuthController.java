@@ -18,7 +18,7 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping
-    public ResponseEntity<StudentDTO> auth(@RequestBody AuthRequest data) {
-        return ResponseEntity.ok(service.save(data));
+    public Mono<AuthResponse> auth(@RequestBody AuthRequest data) {
+        return service.save(data);
     }
 }

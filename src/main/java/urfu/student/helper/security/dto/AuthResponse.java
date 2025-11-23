@@ -1,3 +1,5 @@
 package urfu.student.helper.security.dto;
 
-public record AuthResponse(String token, StudentProfileDto student) {}
+import urfu.student.helper.db.student.dto.StudentDTO;
+
+public record AuthResponse(String token, StudentDTO student) {}
