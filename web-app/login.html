@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EducationTracker - Вход</title>
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="logo_URFU.jpg" alt="URFU Logo" class="logo-img">
+        </div>
+
+        <div class="login-form">
+            <div class="form-header">
+                <h1 class="main-header">Добро пожаловать</h1>
+                <p class="sub-header">Для регистрации нужно иметь аккаунт на сайте https://elearn.urfu.ru/</p>
+            </div>
+
+            <div id="error" class="error-message" style="display: none;">
+                <span id="errorText"></span>
+            </div>
+
+            <form id="loginForm" method="post" autocomplete="off" novalidate="novalidate">
+                <div class="form-fields">
+                    <div class="input-group">
+                        <div class="input-label">Email</div>
+                        <div class="input-field">
+                            <input 
+                                id="userNameInput" 
+                                name="UserName" 
+                                type="email" 
+                                placeholder="Введите ваш email" 
+                                class="email-input"
+                                autocomplete="off"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label">Пароль</div>
+                        <div class="input-field">
+                            <input 
+                                id="passwordInput" 
+                                name="Password" 
+                                type="password" 
+                                placeholder="Введите ваш пароль" 
+                                class="password-input"
+                                autocomplete="off"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="display: none;">
+                        <input type="checkbox" name="Kmsi" id="kmsiInput" value="true">
+                        <label for="kmsiInput">Оставаться в системе</label>
+                    </div>
+
+                    <input type="hidden" id="optionForms" name="AuthMethod" value="FormsAuthentication">
+
+                    <button type="submit" class="login-button" id="submitButton">
+                        <span class="button-text">Войти в аккаунт</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

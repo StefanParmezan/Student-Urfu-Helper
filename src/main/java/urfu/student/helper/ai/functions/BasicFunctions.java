@@ -12,7 +12,7 @@ import java.time.ZoneId;
 
 @Component
 @AllArgsConstructor
-public class BasicFunctions {
+public class    BasicFunctions {
     private final StudentHolder holder;
     private final AiFunctionService service;
 
