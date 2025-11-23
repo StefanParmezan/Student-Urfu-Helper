@@ -1,48 +1,51 @@
 package urfu.student.helper.security.config;
 
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
-import urfu.student.helper.security.jwt.JwtAuthenticationConverter;
-import urfu.student.helper.security.jwt.JwtAuthenticationManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
-@AllArgsConstructor
-@EnableWebFluxSecurity
+@EnableWebSecurity
 public class SecurityConfig {
-    private final JwtAuthenticationManager authenticationManager;
-    private final JwtAuthenticationConverter authenticationConverter;
 
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-        AuthenticationWebFilter jwtFilter = new AuthenticationWebFilter(authenticationManager);
-        jwtFilter.setServerAuthenticationConverter(authenticationConverter);
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable()) // Для разработки, в продакшене настроить правильно
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/auth").permitAll()
+                        .anyRequest().authenticated()
+                );
 
-        return http
-                .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll()
-                        .pathMatchers(
-                                "/v3/api-docs", "/v3/api-docs/**",
-                                "/swagger-ui.html", "/swagger-ui/**"
-                        ).permitAll()
-                        .anyExchange().authenticated()
-                )
-                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .build();
+        return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
 }
