@@ -7,11 +7,7 @@ public record CourseAiDTO (
 ) implements Comparable<CourseAiDTO> {
     @Override
     public String toString() {
-        return "CourseAiDTO{" +
-                "name='" + name + '\'' +
-                ", category='" + category + '\'' +
-                ", url='" + url + '\'' +
-                '}';
+        return "Курс " + name + " из категории " + category + " имеет ссылку " + url;
     }
 
     @Override
