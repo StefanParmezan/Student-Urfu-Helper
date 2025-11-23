@@ -25,7 +25,7 @@ public class StudentAuthentificationPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return student.getStudentName() + " " + student.getStudentSurName() + " " + student.getPatronymic();
+        return student.getEmail();
     }
 
     public Long getId() {
