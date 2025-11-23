@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ProfileParser extends SeleniumParser {
+public class ProfileParser extends SeleniumParser implements AutoCloseable {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
@@ -262,5 +262,10 @@ public class ProfileParser extends SeleniumParser {
             log.warn("Не удалось извлечь URL курса: {}", e.getMessage());
             return "";
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }
