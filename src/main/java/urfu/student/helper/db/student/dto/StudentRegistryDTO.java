@@ -1,12 +1,14 @@
 package urfu.student.helper.db.student.dto;
 
+import reactor.core.publisher.Mono;
 import urfu.student.helper.security.dto.CourseDto;
 
+import java.time.ZoneId;
 import java.util.List;
 
 public record StudentRegistryDTO(
         String studentFio,
-        String timeZone,
+        ZoneId timeZone,
         String educationStatus,
         String academicGroup,
         String studentNumber,
@@ -25,4 +27,5 @@ public record StudentRegistryDTO(
                         ", courses=" + courses +
                         '}';
         }
+
 }

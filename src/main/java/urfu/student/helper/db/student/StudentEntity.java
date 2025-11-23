@@ -20,6 +20,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class StudentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -63,6 +64,18 @@ public class StudentEntity {
         this.educationStatus = EducationStatus.getByName(educationStatus);
     }
 
+    public StudentEntity(String studentFio, String password, ZoneId zoneId, EducationStatus educationStatus, String academicGroup, String studentNumber, String email, List<CourseEntity> courseEntityList){
+        this.studentFio = studentFio;
+        this.password = password;
+        this.timeZone = zoneId;
+        this.educationStatus = educationStatus;
+        this.academicGroup = academicGroup;
+        this.studentNumber = studentNumber;
+        this.email = email;
+        this.courseEntityList = courseEntityList;
+    }
+
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -100,4 +113,6 @@ public class StudentEntity {
             return LOOKUP_MAP.get(name.toLowerCase());
         }
     }
+
+
 }

@@ -6,22 +6,26 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.dto.StudentRegistryDTO;
+import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.security.dto.CourseDto;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Component
 public class ProfileParser extends SeleniumParser {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-    public Mono<StudentRegistryDTO> parseStudentProfile(String email, String password) {
-        return login(email, password)
+    public Mono<StudentRegistryDTO> parseStudentProfile(AuthRequest authRequest) {
+        return login(authRequest.username(), authRequest.password())
                 .flatMap(loginResult -> {
                     getDriver().get("https://elearn.urfu.ru/user/profile.php");
                     WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
@@ -37,7 +41,7 @@ public class ProfileParser extends SeleniumParser {
                         String studentNumber = extractStudentNumber(wait);
 
                         return extractCourses()
-                                .map(courses -> new StudentRegistryDTO(fio, timeZone, educationStatus, academicGroup, studentNumber, studentEmail, courses));
+                                .map(courses -> new StudentRegistryDTO(fio, ZoneId.of(timeZone), educationStatus, academicGroup, studentNumber, studentEmail, courses));
 
                     } catch (Exception e) {
                         log.error("Ошибка при парсинге профиля: {}", e.getMessage());

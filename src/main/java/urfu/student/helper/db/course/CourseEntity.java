@@ -3,6 +3,7 @@ package urfu.student.helper.db.course;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class CourseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     @ToString.Exclude
-    private StudentEntity studentEntity;
+    private Mono<StudentEntity> studentEntity;
 
     @Override
     public final boolean equals(Object o) {
@@ -47,5 +48,11 @@ public class CourseEntity {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public CourseEntity(String courseName, String courseCategory, String courseUrl){
+        this.courseName = courseName;
+        this.courseCategory = courseCategory;
+        this.courseUrl = courseUrl;
     }
 }

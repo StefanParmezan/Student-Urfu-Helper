@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.dto.StudentRegistryDTO;
+import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.security.dto.CourseDto;
 
 import java.util.List;
@@ -44,7 +44,7 @@ class ProfileParserTest {
         log.info("Запуск реального теста обращения к API elearn");
 
         try {
-            StudentRegistryDTO result = profileParser.parseStudentProfile(TEST_EMAIL, TEST_PASSWORD).block();
+            StudentRegistryDTO result = profileParser.parseStudentProfile(new AuthRequest(TEST_EMAIL, TEST_PASSWORD)).block();
 
             assertNotNull(result, "Результат не должен быть null");
             assertNotNull(result.studentFio(), "ФИО студента не должно быть null");
@@ -87,7 +87,7 @@ class ProfileParserTest {
     void testParseStudentProfile_CoursesValidation() {
         log.info("Запуск теста валидации курсов");
 
-        StudentRegistryDTO result = profileParser.parseStudentProfile(TEST_EMAIL, TEST_PASSWORD)
+        StudentRegistryDTO result = profileParser.parseStudentProfile(new AuthRequest(TEST_EMAIL, TEST_PASSWORD))
                 .block(); // Блокируем для теста
 
         assertNotNull(result, "Результат не должен быть null");
@@ -117,7 +117,7 @@ class ProfileParserTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> profileParser.parseStudentProfile("invalid@email.com", "wrongpassword")
+                () -> profileParser.parseStudentProfile(new AuthRequest("invalid@email.com", "wrongpassword"))
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -130,7 +130,7 @@ class ProfileParserTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> profileParser.parseStudentProfile("", "")
+                () -> profileParser.parseStudentProfile(new AuthRequest("", ""))
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -143,7 +143,7 @@ class ProfileParserTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> profileParser.parseStudentProfile(null, null)
+                () -> profileParser.parseStudentProfile(new AuthRequest(null, null))
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
