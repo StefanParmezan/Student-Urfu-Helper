@@ -32,7 +32,7 @@ public class CourseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     @ToString.Exclude
-    private Mono<StudentEntity> studentEntity;
+    private StudentEntity studentEntity;
 
     @Override
     public final boolean equals(Object o) {

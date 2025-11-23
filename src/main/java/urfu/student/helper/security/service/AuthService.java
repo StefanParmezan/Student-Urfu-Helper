@@ -26,7 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public StudentDTO save(AuthRequest authRequest){
+    public Mono<StudentDTO> save(AuthRequest authRequest){
         try (ProfileParser parser = new ProfileParser()) {
             Mono<StudentRegistryDTO> studentRegistryDTO = parser.parseStudentProfile(authRequest);
             String password = passwordEncoder.encode(authRequest.password());
@@ -40,11 +40,11 @@ public class AuthService {
                     studentRegistryDTO1.studentEmail(),
                     studentRegistryDTO1.courses().stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()
             ));
-            return StudentDTO.of(studentRepository.save(student));
+            return student.map(studentRepository::save)
+                    .map(StudentDTO::of);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
 }

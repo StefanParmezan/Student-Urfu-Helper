@@ -9,9 +9,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import urfu.student.helper.security.dto.CourseDto;
 
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 public class OpenInfoParser extends SeleniumParser {
     public Flux<CourseDto> getCourses() {
         getDriver().get("https://elearn.urfu.ru/");
@@ -39,6 +36,7 @@ public class OpenInfoParser extends SeleniumParser {
     private Mono<CourseDto> courseFromElement(WebElement element) {
         return Mono.just(new CourseDto(
                 element.getText(),
+                null,
                 element.getDomAttribute("href")
         )).onErrorResume(throwable -> Mono.empty());
     }
