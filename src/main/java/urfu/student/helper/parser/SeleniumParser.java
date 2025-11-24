@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 @Component
-@Scope("prototype") // ВАЖНО: каждый запрос получает свой экземпляр
-public class SeleniumParser {
+public class SeleniumParser implements AutoCloseable {
     private WebDriver driver;
 
     public WebDriver getDriver() {
@@ -31,21 +30,11 @@ public class SeleniumParser {
         options.addArguments("--remote-allow-origins=*");
 
         this.driver = new ChromeDriver(options);
-
-        // Настройка таймаутов
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
-        driver.manage().timeouts().pageLoadTimeout(java.time.Duration.ofSeconds(30));
     }
 
-    public void closeDriver() {
-        if (driver != null) {
-            try {
-                driver.quit();
-            } catch (Exception e) {
-                // Логируем, но не прерываем выполнение
-                System.err.println("Error closing driver: " + e.getMessage());
-            }
-            driver = null;
-        }
+    @Override
+    public void close() throws Exception {
+        driver.quit();
+        driver.close();
     }
 }

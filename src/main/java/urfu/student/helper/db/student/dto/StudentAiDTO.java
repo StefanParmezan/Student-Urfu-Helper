@@ -3,6 +3,7 @@ package urfu.student.helper.db.student.dto;
 import urfu.student.helper.db.course.dto.CourseAiDTO;
 import urfu.student.helper.db.parents.CollectionToAiStringAdapter;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -13,6 +14,7 @@ public record StudentAiDTO  (
         List<CourseAiDTO> courses
 ) {
     @Override
+    @NotNull
     public String toString() {
         return """
                 Студент %s обучается на %s на курсах %s

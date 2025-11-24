@@ -7,12 +7,8 @@ import java.time.ZoneId;
 import java.util.List;
 
 public record StudentDTO(
-        String studentFio,
-        ZoneId timeZone,
+        String fio,
+        String timeZone,
         StudentEntity.EducationStatus educationStatus,
-        String academicGroup,
-        List<CourseDTO> courseDtoList) {
-    public static StudentDTO of(StudentEntity student){
-        return new StudentDTO(student.getStudentFio(), student.getTimeZone(), student.getEducationStatus(), student.getAcademicGroup(), student.getCourseEntityList().stream().map(s -> new CourseDTO(s.getCourseName(), s.getCourseCategory(), s.getCourseUrl())).toList());
-    }
+        String academicGroup) {
 }

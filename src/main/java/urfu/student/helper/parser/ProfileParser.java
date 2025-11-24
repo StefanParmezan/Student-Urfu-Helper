@@ -7,8 +7,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
+import urfu.student.helper.db.student.dto.StudentDTO;
 import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.db.course.dto.CourseDTO;
 
@@ -18,13 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ProfileParser extends SeleniumParser implements AutoCloseable {
+public class ProfileParser extends SeleniumParser {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-    public Mono<StudentEntity> parseStudentProfile(AuthRequest authRequest) {
+    public Mono<StudentDTO> parseStudentProfile(AuthRequest authRequest) {
         return login(authRequest.username(), authRequest.password())
-                .flatMap(loginResult -> {
+                .map(loginResult -> {
                     getDriver().get("https://elearn.urfu.ru/user/profile.php");
                     WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
 
@@ -38,13 +40,12 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
                         String academicGroup = extractAcademicGroup(wait);
                         String studentNumber = extractStudentNumber(wait);
 
-                        return extractCourses()
-                                .map(courses -> new StudentEntity(null,
-                                        fio, ZoneId.of(timeZone),
-                                        StudentEntity.EducationStatus.getByName(educationStatus),
-                                        academicGroup, studentNumber,
-                                        studentEmail, courses.stream().map(s -> s.of(s.name(), s.category(), s.url())).toList()));
-
+                        return new StudentDTO(
+                                fio,
+                                timeZone,
+                                StudentEntity.EducationStatus.getByName(educationStatus),
+                                studentNumber
+                        );
                     } catch (Exception e) {
                         log.error("Ошибка при парсинге профиля: {}", e.getMessage());
                         return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка при получении данных профиля"));
@@ -92,7 +93,7 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
         });
     }
 
-    private Mono<List<CourseDTO>> extractCourses() {
+    private Flux<CourseDTO> extractCourses() {
         return Mono.fromCallable(() -> {
             List<CourseDTO> courses = new ArrayList<>();
 
@@ -136,7 +137,7 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
             }
 
             return courses;
-        });
+        }).flatMapMany(Flux::fromIterable);
     }
 
     private String extractFio(WebDriverWait wait) {
@@ -257,10 +258,5 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
             log.warn("Не удалось извлечь URL курса: {}", e.getMessage());
             return "";
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-
     }
 }

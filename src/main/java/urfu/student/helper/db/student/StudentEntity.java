@@ -20,14 +20,13 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class StudentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name="student_fio")
-    private String studentFio;
+    private String fio;
 
     @Column(name="password")
     private String password;
@@ -63,18 +62,6 @@ public class StudentEntity {
     public void setEducationStatus(String educationStatus) {
         this.educationStatus = EducationStatus.getByName(educationStatus);
     }
-
-    public StudentEntity(String studentFio, String password, ZoneId zoneId, EducationStatus educationStatus, String academicGroup, String studentNumber, String email, List<CourseEntity> courseEntityList){
-        this.studentFio = studentFio;
-        this.password = password;
-        this.timeZone = zoneId;
-        this.educationStatus = educationStatus;
-        this.academicGroup = academicGroup;
-        this.studentNumber = studentNumber;
-        this.email = email;
-        this.courseEntityList = courseEntityList;
-    }
-
 
     @Override
     public final boolean equals(Object o) {
