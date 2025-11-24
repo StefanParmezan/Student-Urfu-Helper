@@ -1,10 +1,11 @@
 package urfu.student.helper.db.course;
 
+import reactor.core.publisher.Flux;
 import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.List;
 
 public interface CourseService {
-    List<CourseEntity> getAllCourses();
-    List<CourseEntity> getStudentCourses(StudentEntity student);
+    Flux<CourseEntity> getAllCourses();
+    Flux<CourseEntity> getStudentCourses(StudentEntity student);
 }

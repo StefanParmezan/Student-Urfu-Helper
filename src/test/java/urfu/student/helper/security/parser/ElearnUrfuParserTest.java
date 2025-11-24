@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 import urfu.student.helper.db.course.dto.CourseAiDTO;
+import urfu.student.helper.parser.ElearnUfuParser;
 
 import java.io.IOException;
 import java.nio.file.Files;

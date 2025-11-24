@@ -1,4 +1,4 @@
-package urfu.student.helper.security.parser;
+package urfu.student.helper.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

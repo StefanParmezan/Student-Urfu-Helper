@@ -1,7 +1,6 @@
 package urfu.student.helper.db.student.dto;
 
-import reactor.core.publisher.Mono;
-import urfu.student.helper.security.dto.CourseDto;
+import urfu.student.helper.db.course.dto.CourseDTO;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -13,7 +12,7 @@ public record StudentRegistryDTO(
         String academicGroup,
         String studentNumber,
         String studentEmail,
-        List<CourseDto> courses
+        List<CourseDTO> courses
         ) {
         @Override
         public String toString() {

@@ -1,8 +1,8 @@
-package urfu.student.helper.ai.functions.service;
+package urfu.student.helper.ai.functions;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import urfu.student.helper.db.course.CourseEntity;
+import reactor.core.publisher.Mono;
 import urfu.student.helper.db.course.CourseMapper;
 import urfu.student.helper.db.course.CourseService;
 import urfu.student.helper.db.course.dto.CourseAiDTO;
@@ -10,43 +10,30 @@ import urfu.student.helper.db.parents.CollectionToAiStringAdapter;
 import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
-public class AiFunctionServiceImpl implements AiFunctionService {
+public class AiFunctionService {
     private final CourseService courseService;
     private final CourseMapper mapper;
 
-    @Override
-    public List<CourseAiDTO> getAllCourses() {
+    public Mono<String> getAllCourses() {
         return courseService.getAllCourses()
-                .stream()
                 .map(mapper::toAiDto)
-                .sorted()
-                .toList();
+                .sort()
+                .collectList()
+                .map(this::mapToString);
     }
 
-    @Override
-    public List<CourseAiDTO> getStudentCourses(StudentEntity student) {
+    public Mono<String> getStudentCourses(StudentEntity student) {
         return courseService.getStudentCourses(student)
-                .stream()
                 .map(mapper::toAiDto)
-                .sorted()
-                .toList();
+                .sort()
+                .collectList()
+                .map(this::mapToString);
     }
 
-    public <T> String getSomeByCourse(String aiReturnedCourseName, Function<CourseEntity, T> mapperFunction) {
-        var list = courseService.getAllCourses()
-                .stream()
-                .filter(course -> {
-                    String realCourseName = course.getCourseName();
-                    return realCourseName.contains(aiReturnedCourseName) ||
-                            aiReturnedCourseName.contains(realCourseName);
-                })
-                .map(mapperFunction)
-                .toList();
-
+    public String mapToString(List<CourseAiDTO> list) {
         if (list.isEmpty()) {
             return "По такому имени не найдено не одного курса. Попробуй запросить еще раз с конкретным именем";
         }

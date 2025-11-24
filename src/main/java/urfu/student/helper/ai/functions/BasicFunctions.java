@@ -5,7 +5,6 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 import urfu.student.helper.ai.StudentHolder;
-import urfu.student.helper.ai.functions.service.AiFunctionService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,12 +23,12 @@ public class    BasicFunctions {
 
     @Tool(name = "getGeneralCoursesList", description = "Говорит тебе все существующие курсы. Полезно чтобы узначть что ты можешь предложить студенту")
     public String getGeneralCoursesList() {
-        return service.getAllCourses().toString();
+        return service.getAllCourses().block();
     }
 
     @Tool(name = "getStudentCoursesList", description = "Говорит тебе курсы на которые уже записан студент с которым ты работаешь")
     public String getStudentCoursesList() {
-        return service.getStudentCourses(holder.getStudent()).toString();
+        return service.getStudentCourses(holder.getStudent()).block();
     }
 
     @Tool(name = "getStudentMarks", description = "Говорит тебе оценки по курсу")

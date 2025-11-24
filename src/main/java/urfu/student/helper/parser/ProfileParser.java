@@ -1,4 +1,4 @@
-package urfu.student.helper.security.parser;
+package urfu.student.helper.parser;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -6,13 +6,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
-import urfu.student.helper.db.student.dto.StudentRegistryDTO;
 import urfu.student.helper.security.dto.AuthRequest;
-import urfu.student.helper.security.dto.CourseDto;
+import urfu.student.helper.db.course.dto.CourseDTO;
 
 import java.time.Duration;
 import java.time.ZoneId;
@@ -45,7 +43,7 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
                                         fio, ZoneId.of(timeZone),
                                         StudentEntity.EducationStatus.getByName(educationStatus),
                                         academicGroup, studentNumber,
-                                        studentEmail, courses.stream().map(s -> s.of(s.name(), s.courseCategory(), s.url())).toList()));
+                                        studentEmail, courses.stream().map(s -> s.of(s.name(), s.category(), s.url())).toList()));
 
                     } catch (Exception e) {
                         log.error("Ошибка при парсинге профиля: {}", e.getMessage());
@@ -94,9 +92,9 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
         });
     }
 
-    private Mono<List<CourseDto>> extractCourses() {
+    private Mono<List<CourseDTO>> extractCourses() {
         return Mono.fromCallable(() -> {
-            List<CourseDto> courses = new ArrayList<>();
+            List<CourseDTO> courses = new ArrayList<>();
 
             try {
                 // Переходим на страницу с курсами
@@ -125,7 +123,7 @@ public class ProfileParser extends SeleniumParser implements AutoCloseable {
                         String url = extractCourseUrlFromCard(card);
 
                         if (name != null && !name.isEmpty() && !name.equals("Образцы сайтов курсов")) {
-                            courses.add(new CourseDto(name, courseCategory, url));
+                            courses.add(new CourseDTO(name, courseCategory, url));
                             log.info("Добавлен курс: {}", name);
                         }
                     } catch (Exception e) {

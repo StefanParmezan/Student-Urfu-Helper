@@ -1,7 +1,7 @@
 package urfu.student.helper.db.student.dto;
 
 import urfu.student.helper.db.student.StudentEntity;
-import urfu.student.helper.security.dto.CourseDto;
+import urfu.student.helper.db.course.dto.CourseDTO;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -11,8 +11,8 @@ public record StudentDTO(
         ZoneId timeZone,
         StudentEntity.EducationStatus educationStatus,
         String academicGroup,
-        List<CourseDto> courseDtoList) {
+        List<CourseDTO> courseDtoList) {
     public static StudentDTO of(StudentEntity student){
-        return new StudentDTO(student.getStudentFio(), student.getTimeZone(), student.getEducationStatus(), student.getAcademicGroup(), student.getCourseEntityList().stream().map(s -> new CourseDto(s.getCourseName(), s.getCourseCategory(), s.getCourseUrl())).toList());
+        return new StudentDTO(student.getStudentFio(), student.getTimeZone(), student.getEducationStatus(), student.getAcademicGroup(), student.getCourseEntityList().stream().map(s -> new CourseDTO(s.getCourseName(), s.getCourseCategory(), s.getCourseUrl())).toList());
     }
 }
