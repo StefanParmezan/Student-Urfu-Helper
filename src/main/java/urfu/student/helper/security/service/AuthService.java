@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
+import urfu.student.helper.db.student.StudentMapper;
 import urfu.student.helper.db.student.StudentRepository;
 import urfu.student.helper.db.student.dto.StudentDTO;
 import urfu.student.helper.security.dto.AuthRequest;
@@ -20,6 +21,8 @@ public class AuthService {
 
     private final StudentRepository studentRepository;
 
+    private final StudentMapper mapper;
+
     private final PasswordEncoder passwordEncoder;
 
     private final JwtService service;
@@ -27,14 +30,15 @@ public class AuthService {
 
     public Mono<AuthResponse> save(AuthRequest authRequest){
         try (ProfileParser parser = new ProfileParser()) {
-            Mono<StudentEntity> studentMono = parser.parseStudentProfile(authRequest);
-            String password = passwordEncoder.encode(authRequest.password());
-            return studentMono.doOnNext(student -> student.setPassword(passwordEncoder.encode(student.getPassword())))
-                    .map(studentRepository::save)
-                    .map(student -> new AuthResponse(service.generateToken(student.getEmail()), StudentDTO.of(student)));
+            return parser.parseStudentProfile(authRequest)
+                    .doOnNext(dto -> {
+                        StudentEntity student = mapper.toEntity(dto);
+                        student.setPassword(passwordEncoder.encode(student.getPassword()));
+                        studentRepository.save(student);
+                    })
+                    .map(student -> new AuthResponse(service.generateToken(student.email()), student));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 }
