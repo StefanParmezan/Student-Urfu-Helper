@@ -1,11 +1,10 @@
 package urfu.student.helper.parser;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
 @Component
 public class SeleniumParser implements AutoCloseable {

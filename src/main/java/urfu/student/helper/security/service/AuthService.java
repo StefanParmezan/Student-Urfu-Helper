@@ -8,11 +8,10 @@ import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
 import urfu.student.helper.db.student.StudentMapper;
 import urfu.student.helper.db.student.StudentRepository;
-import urfu.student.helper.db.student.dto.StudentDTO;
+import urfu.student.helper.parser.ProfileParser;
 import urfu.student.helper.security.dto.AuthRequest;
 import urfu.student.helper.security.dto.AuthResponse;
 import urfu.student.helper.security.jwt.JwtService;
-import urfu.student.helper.parser.ProfileParser;
 
 @Transactional
 @Service

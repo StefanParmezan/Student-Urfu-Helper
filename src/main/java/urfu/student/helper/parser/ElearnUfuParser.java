@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 import urfu.student.helper.db.course.dto.CourseAiDTO;
 
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

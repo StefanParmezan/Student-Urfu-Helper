@@ -9,13 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import urfu.student.helper.db.course.dto.CourseDTO;
 import urfu.student.helper.db.student.StudentEntity;
 import urfu.student.helper.db.student.dto.StudentDTO;
 import urfu.student.helper.security.dto.AuthRequest;
-import urfu.student.helper.db.course.dto.CourseDTO;
 
 import java.time.Duration;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class ProfileParser extends SeleniumParser {
                         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".userprofile")));
 
                         String fio = extractFio(wait);
-                        String studentEmail = extractEmail(wait);
+                        String email = extractEmail(wait);
                         String timeZone = extractTimeZone(wait);
                         String educationStatus = extractEducationStatus(wait);
                         String academicGroup = extractAcademicGroup(wait);
@@ -43,6 +42,7 @@ public class ProfileParser extends SeleniumParser {
                         return new StudentDTO(
                                 fio,
                                 timeZone,
+                                email,
                                 StudentEntity.EducationStatus.getByName(educationStatus),
                                 studentNumber
                         );
@@ -50,7 +50,7 @@ public class ProfileParser extends SeleniumParser {
                         log.error("Ошибка при парсинге профиля: {}", e.getMessage());
                         return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка при получении данных профиля"));
                     }
-                });
+                }).cast(StudentDTO.class);
     }
 
     public Mono<Boolean> login(String email, String password) {

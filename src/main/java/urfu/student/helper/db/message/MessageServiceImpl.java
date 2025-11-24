@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.stereotype.Service;
-import urfu.student.helper.db.chat.ChatEntity;
 import urfu.student.helper.db.chat.ChatService;
 
 import java.util.List;

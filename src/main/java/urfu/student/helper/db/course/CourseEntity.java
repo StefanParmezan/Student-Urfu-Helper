@@ -3,7 +3,6 @@ package urfu.student.helper.db.course;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import reactor.core.publisher.Mono;
 import urfu.student.helper.db.student.StudentEntity;
 
 import java.util.Objects;
