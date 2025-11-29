@@ -10,6 +10,6 @@ import urfu.student.helper.security.dto.AuthRequest;
 public class HelperApplication {
 	public static void main(String[] args) {
 		ApplicationContext applicationContext =  SpringApplication.run(HelperApplication.class, args);
-		applicationContext.getBean(ProfileParser.class).login(new AuthRequest("beerklaro@bk.ru", "B0rzhchling5vaa789"));
+		applicationContext.getBean(ProfileParser.class).parseStudentProfile(new AuthRequest("beerklaro@bk.ru", "B0rzhchling5vaa789"));
 	}
 }

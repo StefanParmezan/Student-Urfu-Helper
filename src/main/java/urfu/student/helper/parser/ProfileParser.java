@@ -10,19 +10,44 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-import urfu.student.helper.db.student.dto.StudentDTO;
+import urfu.student.helper.db.course.dto.CourseDTO;
+import urfu.student.helper.db.student.StudentEntity;
+import urfu.student.helper.db.student.dto.StudentRegistryDTO;
 import urfu.student.helper.security.dto.AuthRequest;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+/*String fio,
+String email,
+String timeZone,
+StudentEntity.EducationStatus educationStatus,
+String academicGroup*/
 @Slf4j
 @Service
 public class ProfileParser extends SeleniumParser {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(2);
+    private final WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
 
-    public Mono<StudentDTO> parseStudentProfile(AuthRequest authRequest) {
+    public Mono<StudentRegistryDTO> parseStudentProfile(AuthRequest authRequest) {
         login(authRequest);
+        getDriver().get("https://elearn.urfu.ru/user/profile.php");
+        String fio = getDriver().findElement(By.className("h2")).getText();
+        String email = authRequest.username();
+        String timeZone = parseTextByNodeName("Часовой пояс");
+        StudentEntity.EducationStatus educationStatus = StudentEntity.EducationStatus.getByName(parseTextByNodeName("Должность"));
+        String academicGroup = parseTextByNodeName("Academic_group");
+        String studentNumber = parseTextByNodeName("Student_number");
+        log.info("ФИО: {}", fio);
+        log.info("email: {}", email);
+        log.info("Часовой пояс: {}", timeZone);
+        log.info("Статус обучения: {}", educationStatus);
+        log.info("Группа: {}", academicGroup);
+        log.info("Номер студента elearn: {}", studentNumber);
+        getDriver().close();
         return null;
     }
 
@@ -30,7 +55,6 @@ public class ProfileParser extends SeleniumParser {
         String username = authRequest.username();
         String password = authRequest.password();
         getDriver().get("https://elearn.urfu.ru/my");
-        WebDriverWait wait = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
         WebElement emailInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("userNameInput")));
         WebElement passwordInput = getDriver().findElement(By.id("passwordInput"));
         WebElement submitButton = getDriver().findElement(By.id("submitButton"));
@@ -40,13 +64,20 @@ public class ProfileParser extends SeleniumParser {
         passwordInput.sendKeys(password);
         submitButton.click();
         try {
-            wait.until(ExpectedConditions.or(
-                    ExpectedConditions.urlContains("elearn.urfu.ru/my/")
-            ));
+            wait.until(ExpectedConditions.or(ExpectedConditions.urlContains("elearn.urfu.ru/my/")));
         }
         catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такого аккаунта eLearn не существует!");
         }
         log.info("Регистрация с аккаунтом {} успешна!", authRequest.username());
+    }
+
+    public String parseTextByNodeName(String nodeName){
+        List<WebElement> contentNodes = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("li.contentnode")));
+        String text = contentNodes.stream().filter(node -> {
+            WebElement dt = node.findElement(By.tagName("dt"));
+            return nodeName.equals(dt.getText());
+        }).findAny().map(node -> node.findElement(By.tagName("dd")).getText()).orElseThrow();
+        return text;
     }
 }

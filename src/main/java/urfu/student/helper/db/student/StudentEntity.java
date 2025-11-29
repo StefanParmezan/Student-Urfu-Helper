@@ -81,7 +81,7 @@ public class StudentEntity {
 
     @AllArgsConstructor
     public enum EducationStatus {
-        BAKALAVRIAT("Бакалавриат"),
+        BAKALAVRIAT("Бакалавр"),
         SPECIALITET("Специалитет"),
         MAGISTRATURA("Магистратура");
 

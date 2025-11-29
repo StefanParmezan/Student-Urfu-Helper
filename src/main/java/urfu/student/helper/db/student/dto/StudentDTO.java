@@ -7,5 +7,6 @@ public record StudentDTO(
         String email,
         String timeZone,
         StudentEntity.EducationStatus educationStatus,
-        String academicGroup) {
+        String academicGroup
+) {
 }
