@@ -18,7 +18,9 @@ import urfu.student.helper.security.dto.AuthRequest;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /*String fio,
 String email,
@@ -34,6 +36,7 @@ public class ProfileParser extends SeleniumParser {
 
     public Mono<StudentRegistryDTO> parseStudentProfile(AuthRequest authRequest) {
         login(authRequest);
+        List<CourseDTO> courses = parseCourses();
         getDriver().get("https://elearn.urfu.ru/user/profile.php");
         String fio = getDriver().findElement(By.className("h2")).getText();
         String email = authRequest.username();
@@ -47,8 +50,9 @@ public class ProfileParser extends SeleniumParser {
         log.info("Статус обучения: {}", educationStatus);
         log.info("Группа: {}", academicGroup);
         log.info("Номер студента elearn: {}", studentNumber);
+        log.info("Курсы: {}", courses);
         getDriver().close();
-        return null;
+        return Mono.fromCallable(() -> new StudentRegistryDTO(fio, timeZone, educationStatus, academicGroup, studentNumber, email, courses));
     }
 
     public void login(@NotNull AuthRequest authRequest){
@@ -74,10 +78,41 @@ public class ProfileParser extends SeleniumParser {
 
     public String parseTextByNodeName(String nodeName){
         List<WebElement> contentNodes = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("li.contentnode")));
-        String text = contentNodes.stream().filter(node -> {
+        return contentNodes.stream().filter(node -> {
             WebElement dt = node.findElement(By.tagName("dt"));
             return nodeName.equals(dt.getText());
         }).findAny().map(node -> node.findElement(By.tagName("dd")).getText()).orElseThrow();
-        return text;
+    }
+
+    public List<CourseDTO> parseCourses() {
+        List<WebElement> courseCards = wait.until(
+                ExpectedConditions.presenceOfAllElementsLocatedBy(
+                        By.cssSelector("div.dashboard-card[data-region='course-content']")
+                )
+        );
+
+        return courseCards.stream()
+                .map(this::parseCourseCard)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private CourseDTO parseCourseCard(WebElement card) {
+        try {
+            // Извлекаем название курса
+            String name = card.findElement(By.cssSelector("a.coursename span.text-truncate")).getText();
+
+            // Извлекаем категорию курса
+            String category = card.findElement(By.cssSelector("div.text-muted span.text-truncate")).getText();
+
+            // Извлекаем URL курса
+            String url = card.findElement(By.cssSelector("a.coursename")).getAttribute("href");
+
+            return new CourseDTO(name, category, url);
+
+        } catch (Exception e) {
+            System.err.println("Ошибка при парсинге карточки курса: " + e.getMessage());
+            return null;
+        }
     }
 }

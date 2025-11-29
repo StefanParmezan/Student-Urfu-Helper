@@ -32,7 +32,7 @@ public class AuthService {
             return parser.parseStudentProfile(authRequest)
                     .doOnNext(dto -> {
                         StudentEntity student = mapper.toEntity(dto);
-                        student.setPassword(passwordEncoder.encode(student.getPassword()));
+                        student.setPassword(passwordEncoder.encode(authRequest.password()));
                         studentRepository.save(student);
                     })
                     .map(student -> new AuthResponse(service.generateToken(student.email()), student));
